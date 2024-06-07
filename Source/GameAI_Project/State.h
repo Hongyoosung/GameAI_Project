@@ -25,8 +25,4 @@ public:
 	virtual void ExcuteMCTS(UStateMachine* StateMachine);
 
 	virtual TArray<UAction*> GetPossibleActions();
-
-private:
-	UMCTSNode* RootNode;
-	TArray<UAction*> PossibleActions;
 };

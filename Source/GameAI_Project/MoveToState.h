@@ -23,4 +23,8 @@ public:
 
 	// Override to return possible actions
 	virtual TArray<UAction*> GetPossibleActions() override;
+
+private:
+	UMCTSNode* RootNode;
+	TArray<UAction*> PossibleActions;
 };
