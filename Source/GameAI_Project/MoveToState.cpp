@@ -5,36 +5,52 @@
 #include "StateMachine.h"
 #include "MoveForwardAction.h"
 #include "MoveBackwardAction.h"
-#include "MCTSNode.h"
+#include "MoveLeftAction.h"
+#include "MoveRightAction.h"
 
 void UMoveToState::EnterState(UStateMachine* StateMachine)
 {
     PossibleActions = GetPossibleActions();
+
+    if (MCTS == nullptr)
+    {
+        MCTS = NewObject<UMCTS>();
+    }
+
     UE_LOG(LogTemp, Warning, TEXT("Entered MoveToState"));
+
+    // MCTS 트리 확장 및 시뮬레이션
+    MCTS->InitializeMCTS();
+    
 }
 
 void UMoveToState::UpdateState(UStateMachine* StateMachine, float DeltaTime)
 {
-    ExitState(StateMachine);
+    ExcuteMCTS(StateMachine);
 }
 
 void UMoveToState::ExitState(UStateMachine* StateMachine)
 {
-    if (RootNode == nullptr)
+    if (MCTS)
     {
-        RootNode = NewObject<UMCTSNode>();
+        MCTS->Backpropagate(MCTS->Simulate());
     }
+}
 
-    // MCTS 트리 확장 및 시뮬레이션
-    RootNode->Expand(PossibleActions);
+void UMoveToState::ExcuteMCTS(UStateMachine* StateMachine)
+{
+    MCTS->Expand(PossibleActions);
+
+
 
     // 최적의 행동 선택
-    UMCTSNode* BestChild = RootNode->SelectChildNode();
+    UMCTSNode* BestChild = MCTS->SelectChildNode();
     if (BestChild && BestChild->Action)
     {
         BestChild->Action->ExecuteAction(StateMachine);
     }
 }
+
 
 TArray<UAction*> UMoveToState::GetPossibleActions()
 {
@@ -42,6 +58,8 @@ TArray<UAction*> UMoveToState::GetPossibleActions()
 
     Actions.Add(NewObject<UMoveForwardAction>(this, UMoveForwardAction::StaticClass()));
     Actions.Add(NewObject<UMoveBackwardAction>(this, UMoveBackwardAction::StaticClass()));
+    Actions.Add(NewObject<UMoveLeftAction>(this, UMoveLeftAction::StaticClass()));
+    Actions.Add(NewObject<UMoveRightAction>(this, UMoveRightAction::StaticClass()));
 
     return Actions;
 }

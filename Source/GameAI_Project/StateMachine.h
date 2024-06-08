@@ -58,6 +58,10 @@ private:
 	UPROPERTY(Transient)
 	UState* DeadState;
 
+	float CurrentTime;
+
+	float LastStateUpdateTime;
+
 	//UMCTSNode* RootNode;
 
 	void InitStateMachine();

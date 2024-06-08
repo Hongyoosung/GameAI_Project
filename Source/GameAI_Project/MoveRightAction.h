@@ -4,18 +4,18 @@
 
 #include "CoreMinimal.h"
 #include "Action.h"
-#include "MoveBackwardAction.generated.h"
+#include "MoveRightAction.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class GAMEAI_PROJECT_API UMoveBackwardAction : public UAction
+class GAMEAI_PROJECT_API UMoveRightAction : public UAction
 {
 	GENERATED_BODY()
 
 public:
-	virtual void ExecuteAction(UStateMachine*) override;
+	virtual void ExecuteAction(UStateMachine* StateMachine) override;
 
 private:
 	// 타이머 핸들러

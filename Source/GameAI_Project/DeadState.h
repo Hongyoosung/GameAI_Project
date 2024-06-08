@@ -18,5 +18,6 @@ public:
 	virtual void EnterState(UStateMachine* StateMachine) override;
 	virtual void UpdateState(UStateMachine* StateMachine, float DeltaTime) override;
 	virtual void ExitState(UStateMachine* StateMachine) override;
+	virtual void ExcuteMCTS(UStateMachine* StateMachine) override;
 	virtual TArray<UAction*> GetPossibleActions() override;
 };

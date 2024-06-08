@@ -19,6 +19,11 @@ void UDeadState::ExitState(UStateMachine* StateMachine)
 
 }
 
+void UDeadState::ExcuteMCTS(UStateMachine* StateMachine)
+{
+
+}
+
 TArray<UAction*> UDeadState::GetPossibleActions()
 {
     return TArray<UAction*>();

@@ -18,26 +18,11 @@ public:
     UMCTSNode();
 
     void InitializeNode(UMCTSNode* InParent, UAction* InAction);
+    float UCTValue(float ExplorationParameter) const;
 
-    UMCTSNode* SelectChildNode();
-    UMCTSNode* Expand(TArray<UAction*> PossibleActions);
-    float Simulate();
-    void Backpropagate(float InReward);
-
-    float UCTValue(float ExplorationParameter = 1.414f) const;
-
-    UPROPERTY()
-    UMCTSNode* Parent;
-
-    UPROPERTY()
-    TArray<UMCTSNode*> Children;
-
-    UPROPERTY()
     UAction* Action;
-
-    UPROPERTY()
+    UMCTSNode* Parent;
+    TArray<UMCTSNode*> Children;
     float Reward;
-
-    UPROPERTY()
     int32 VisitCount;
 };

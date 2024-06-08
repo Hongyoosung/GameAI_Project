@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "State.h"
+#include "MCTS.h"
 #include "MoveToState.generated.h"
 
 /**
@@ -20,11 +21,12 @@ public:
 	virtual void EnterState(UStateMachine* StateMachine) override;
 	virtual void UpdateState(UStateMachine* StateMachine, float DeltaTime) override;
 	virtual void ExitState(UStateMachine* StateMachine) override;
-
+	virtual void ExcuteMCTS(UStateMachine* StateMachine) override;
 	// Override to return possible actions
 	virtual TArray<UAction*> GetPossibleActions() override;
 
 private:
-	UMCTSNode* RootNode;
+	UMCTS* MCTS;
+	
 	TArray<UAction*> PossibleActions;
 };

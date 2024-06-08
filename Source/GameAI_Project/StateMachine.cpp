@@ -56,7 +56,14 @@ void UStateMachine::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
     // 현재 상태 업데이트
     if (CurrentState)
     {
-        CurrentState->UpdateState(this, DeltaTime);
+        
+        // Status updates every 2 seconds
+        CurrentTime = GetWorld()->GetTimeSeconds();
+        if (CurrentTime - LastStateUpdateTime > 4.0f)
+        {
+            LastStateUpdateTime = CurrentTime;
+            CurrentState->UpdateState(this, DeltaTime);
+        }
     }
 }
 
