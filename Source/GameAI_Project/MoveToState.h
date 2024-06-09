@@ -12,7 +12,7 @@
  */
 class UAction;
 
-UCLASS()
+UCLASS(Blueprintable)
 class GAMEAI_PROJECT_API UMoveToState : public UState
 {
 	GENERATED_BODY()
@@ -21,12 +21,9 @@ public:
 	virtual void EnterState(UStateMachine* StateMachine) override;
 	virtual void UpdateState(UStateMachine* StateMachine, float DeltaTime) override;
 	virtual void ExitState(UStateMachine* StateMachine) override;
-	virtual void ExcuteMCTS(UStateMachine* StateMachine) override;
-	// Override to return possible actions
 	virtual TArray<UAction*> GetPossibleActions() override;
 
 private:
 	UMCTS* MCTS;
-	
 	TArray<UAction*> PossibleActions;
 };

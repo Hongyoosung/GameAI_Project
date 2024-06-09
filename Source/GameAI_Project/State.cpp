@@ -18,15 +18,9 @@ void UState::ExitState(UStateMachine* StateMachine)
 
 void UState::UpdateState(UStateMachine* StateMachine, float DeltaTime)
 {
-    // 상태가 업데이트될 때 수행할 작업
-    ExcuteMCTS(StateMachine);
+
 }
 
-
-void UState::ExcuteMCTS(UStateMachine* StateMachine)
-{
-    
-}
 
 TArray<UAction*> UState::GetPossibleActions()
 {

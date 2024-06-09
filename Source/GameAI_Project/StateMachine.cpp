@@ -13,7 +13,7 @@
 UStateMachine::UStateMachine()
 {
     PrimaryComponentTick.bCanEverTick = true;
-
+    Owner = GetOwner();
 }
 
 void UStateMachine::BeginPlay()
@@ -22,7 +22,9 @@ void UStateMachine::BeginPlay()
 
     // 2초 딜레이 후에 상태 초기화
     FTimerHandle DelayTimerHandle;
-    GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle, this, &UStateMachine::InitStateMachine, 3.0f, false);
+    //GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle, this, &UStateMachine::InitStateMachine, 3.0f, false);
+
+    InitStateMachine();
 }
 
 void UStateMachine::InitStateMachine()
@@ -83,7 +85,6 @@ void UStateMachine::ChangeState(UState* NewState)
 
 void UStateMachine::TriggerBlueprintEvent(const FName& EventName)
 {
-    AActor* Owner = GetOwner();
     if (Owner)
     {
         UFunction* Function = Owner->FindFunction(EventName);
@@ -92,6 +93,26 @@ void UStateMachine::TriggerBlueprintEvent(const FName& EventName)
             Owner->ProcessEvent(Function, nullptr);
         }
     }
+}
+
+UState* UStateMachine::GetMoveToState()
+{
+    return MoveToState;
+}
+
+UState* UStateMachine::GetAttackState()
+{
+    return AttackState;
+}
+
+UState* UStateMachine::GetFleeState()
+{
+    return FleeState;
+}
+
+UState* UStateMachine::GetDeadState()
+{
+    return DeadState;
 }
 
 

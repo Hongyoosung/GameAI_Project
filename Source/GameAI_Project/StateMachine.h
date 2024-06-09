@@ -37,12 +37,21 @@ public:
 	void TriggerBlueprintEvent(const FName& EventName);
 
 	APawn* OwnerPawn;
-    //void ExecuteMCTS();
 
+	UFUNCTION(BlueprintCallable)
+	UState* GetMoveToState();
+
+	UFUNCTION(BlueprintCallable)
+	UState* GetAttackState();
+
+	UFUNCTION(BlueprintCallable)
+	UState* GetFleeState();
+
+	UFUNCTION(BlueprintCallable)
+	UState* GetDeadState();
+
+	
 private:
-	AAIController* AIController;
-	FTimerHandle TimerHandle;
-
 	UPROPERTY()
 	UState* CurrentState;
 
@@ -58,11 +67,12 @@ private:
 	UPROPERTY(Transient)
 	UState* DeadState;
 
+	AAIController* AIController;
+	FTimerHandle TimerHandle;
+	AActor* Owner;
+
 	float CurrentTime;
-
 	float LastStateUpdateTime;
-
-	//UMCTSNode* RootNode;
 
 	void InitStateMachine();
 };

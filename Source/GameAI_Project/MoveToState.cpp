@@ -19,35 +19,35 @@ void UMoveToState::EnterState(UStateMachine* StateMachine)
 
     UE_LOG(LogTemp, Warning, TEXT("Entered MoveToState"));
 
-    // MCTS 트리 확장 및 시뮬레이션
-    MCTS->InitializeMCTS();
-    
+    MCTS->InitializeMCTS();    
 }
 
 void UMoveToState::UpdateState(UStateMachine* StateMachine, float DeltaTime)
 {
-    ExcuteMCTS(StateMachine);
+    if (MCTS->CurrentNode->Children.Num() == 0)
+    {
+        MCTS->Expand(PossibleActions);
+    }
+
+    // 최적의 행동 선택
+    UMCTSNode* BestChild = MCTS->SelectChildNode();
+
+
+
+    if (BestChild && BestChild->Action)
+    {
+        BestChild->Action->ExecuteAction(StateMachine);
+    }
+
+    MCTS->CurrentNode = BestChild;
 }
 
 void UMoveToState::ExitState(UStateMachine* StateMachine)
 {
     if (MCTS)
     {
-        MCTS->Backpropagate(MCTS->Simulate());
-    }
-}
-
-void UMoveToState::ExcuteMCTS(UStateMachine* StateMachine)
-{
-    MCTS->Expand(PossibleActions);
-
-
-
-    // 최적의 행동 선택
-    UMCTSNode* BestChild = MCTS->SelectChildNode();
-    if (BestChild && BestChild->Action)
-    {
-        BestChild->Action->ExecuteAction(StateMachine);
+        float Reward = MCTS->Simulate();
+        MCTS->Backpropagate(MCTS->CurrentNode, Reward);
     }
 }
 
@@ -60,6 +60,7 @@ TArray<UAction*> UMoveToState::GetPossibleActions()
     Actions.Add(NewObject<UMoveBackwardAction>(this, UMoveBackwardAction::StaticClass()));
     Actions.Add(NewObject<UMoveLeftAction>(this, UMoveLeftAction::StaticClass()));
     Actions.Add(NewObject<UMoveRightAction>(this, UMoveRightAction::StaticClass()));
+    
 
     return Actions;
 }

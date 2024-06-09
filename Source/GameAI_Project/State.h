@@ -12,7 +12,7 @@ class UStateMachine;
 class UAction;
 class UMCTS;
 
-UCLASS()
+UCLASS(Blueprintable)
 class GAMEAI_PROJECT_API UState : public UObject
 {
 	GENERATED_BODY()
@@ -21,7 +21,5 @@ public:
 	virtual void EnterState(UStateMachine* StateMachine);
 	virtual void ExitState(UStateMachine* StateMachine);
 	virtual void UpdateState(UStateMachine* StateMachine, float DeltaTime);
-	virtual void ExcuteMCTS(UStateMachine* StateMachine);
-
 	virtual TArray<UAction*> GetPossibleActions();
 };

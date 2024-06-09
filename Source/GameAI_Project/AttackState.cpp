@@ -7,12 +7,14 @@
 
 void UAttackState::EnterState(UStateMachine* StateMachine)
 {
-	Super::EnterState(StateMachine);
+	UE_LOG(LogTemp, Warning, TEXT("Attack State Attack State Attack State Attack State"));
+
+	
 }
 
 void UAttackState::UpdateState(UStateMachine* StateMachine, float DeltaTime)
 {
-
+	StateMachine->TriggerBlueprintEvent("Defaul Attack");
 }
 
 void UAttackState::ExitState(UStateMachine* StateMachine)
@@ -20,10 +22,6 @@ void UAttackState::ExitState(UStateMachine* StateMachine)
 
 }
 
-void UAttackState::ExcuteMCTS(UStateMachine* StateMachine)
-{
-
-}
 
 TArray<UAction*> UAttackState::GetPossibleActions()
 {

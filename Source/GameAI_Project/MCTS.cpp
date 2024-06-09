@@ -5,12 +5,14 @@
 
 UMCTS::UMCTS()
 {
-
+    RootNode = nullptr;
+    CurrentNode = nullptr;
 }
 
 void UMCTS::InitializeMCTS()
 {
-    CurrentNode = NewObject<UMCTSNode>();
+    RootNode = NewObject<UMCTSNode>();
+    CurrentNode = RootNode;
 
     if (CurrentNode != nullptr)
     {
@@ -44,16 +46,18 @@ UMCTSNode* UMCTS::SelectChildNode()
         {
             BestValue = UCT;
             BestChild = Child;
-            BestChild->VisitCount++;
         }
     }
 
-    // print uct value
-    UE_LOG(LogTemp, Warning, TEXT("UCT Value: %f"), BestValue);
+    if (BestChild)
+    {
+        BestChild->VisitCount++;
+        UE_LOG(LogTemp, Warning, TEXT("Selected Child with UCT Value: %f"), BestValue);
 
-    CurrentNode = BestChild;
+        return BestChild;
+    }
 
-    return BestChild;
+    return nullptr;
 }
 
 void UMCTS::Expand(TArray<UAction*> PossibleActions)
@@ -78,31 +82,16 @@ float UMCTS::Simulate()
 
 
 
-void UMCTS::Backpropagate(float InReward)
+void UMCTS::Backpropagate(UMCTSNode* Node, float InReward)
 {
-    // Check if CurrentNode is not null (safety check)
-    if (CurrentNode == nullptr)
+    while (Node)
     {
-        return;
-    }
-    else if(CurrentNode->Parent == nullptr)
-    {
-        UE_LOG(LogTemp, Warning, TEXT("CurrentNode is Root Node"));
+        Node->VisitCount++;
+        Node->Reward += InReward;
+        UE_LOG(LogTemp, Warning, TEXT("VisitCount: %d, Reward: %f"), Node->VisitCount, Node->Reward);
+        Node = Node->Parent;
     }
 
-    UMCTSNode* LastNode = CurrentNode;
-    int32 Count = 0;
-    // Loop until reaching the root node (parent is null)
-    while (CurrentNode->Parent != nullptr)
-    {
-        CurrentNode->Reward += InReward;
-
-        UE_LOG(LogTemp, Warning, TEXT("VisitCount: %d, Reward: %f"), CurrentNode->VisitCount, CurrentNode->Reward);
-        CurrentNode = CurrentNode->Parent;
-
-        Count++;
-        UE_LOG(LogTemp, Warning, TEXT("Count: %d"), Count);
-    }
+    CurrentNode = RootNode;
 }
-
 
