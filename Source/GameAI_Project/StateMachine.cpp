@@ -95,6 +95,11 @@ void UStateMachine::TriggerBlueprintEvent(const FName& EventName)
     }
 }
 
+UState* UStateMachine::GetCurrentState()
+{
+    return CurrentState;
+}
+
 UState* UStateMachine::GetMoveToState()
 {
     return MoveToState;

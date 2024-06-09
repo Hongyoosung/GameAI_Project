@@ -39,6 +39,9 @@ public:
 	APawn* OwnerPawn;
 
 	UFUNCTION(BlueprintCallable)
+	UState* GetCurrentState();
+
+	UFUNCTION(BlueprintCallable)
 	UState* GetMoveToState();
 
 	UFUNCTION(BlueprintCallable)

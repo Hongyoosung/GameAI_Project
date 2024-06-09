@@ -12,34 +12,38 @@ void UMoveForwardAction::ExecuteAction(UStateMachine* StateMachine)
     if (OwnerCharacter)
     {
         FVector ForwardVector = OwnerCharacter->GetActorForwardVector();
-        float TotalDistance = 100.0f; // 1m = 100cm
-        float TimeToMove = 1.0f; // 1초 동안 이동
-        float DistancePerTick = TotalDistance / (TimeToMove / GetWorld()->GetDeltaSeconds());
 
-        ElapsedTime = 0.0f; // ElapsedTime 초기화
+        // 총 이동 거리와 이동 속도를 설정
+        float TotalDistance = 100.0f; // 100cm (1m)
+        float MoveDuration = 1.0f; // 1초 동안 이동
+        float MoveSpeed = TotalDistance / MoveDuration; // 초당 이동 거리
 
-        MoveDelegate.BindLambda([OwnerCharacter, ForwardVector, DistancePerTick, TimeToMove, this]()
+        // 초기 시간 설정
+        ElapsedTime = 0.0f;
+
+        MoveDelegate.BindLambda([OwnerCharacter, ForwardVector, MoveSpeed, this]()
             {
-                UWorld* World = GetWorld();
-                if (World)
-                {
-                    ElapsedTime += World->GetDeltaSeconds();
+                // 델타 시간을 가져옵니다.
+                float DeltaTime = OwnerCharacter->GetWorld()->GetDeltaSeconds();
 
-                    if (ElapsedTime < TimeToMove)
-                    {
-                        OwnerCharacter->AddMovementInput(ForwardVector, DistancePerTick);
-                    }
-                    else
-                    {
-                        World->GetTimerManager().ClearTimer(MoveTimer);
-                    }
+                // 경과 시간 업데이트
+                ElapsedTime += DeltaTime;
+
+                if (ElapsedTime < 1.0f) // 1초 동안만 이동
+                {
+                    OwnerCharacter->AddMovementInput(ForwardVector, MoveSpeed * DeltaTime);
+                }
+                else
+                {
+                    // 타이머 멈추기
+                    OwnerCharacter->GetWorld()->GetTimerManager().ClearTimer(MoveTimer);
                 }
             });
 
-        UWorld* World = GetWorld();
-        if (World)
+        // 타이머 설정: 델타 시간 간격으로 MoveDelegate를 반복 호출
+        if (OwnerCharacter->GetWorld())
         {
-            World->GetTimerManager().SetTimer(MoveTimer, MoveDelegate, World->GetDeltaSeconds(), true);
+            OwnerCharacter->GetWorld()->GetTimerManager().SetTimer(MoveTimer, MoveDelegate, OwnerCharacter->GetWorld()->GetDeltaSeconds(), true);
         }
     }
 }

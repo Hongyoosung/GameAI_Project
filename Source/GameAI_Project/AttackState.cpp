@@ -14,7 +14,8 @@ void UAttackState::EnterState(UStateMachine* StateMachine)
 
 void UAttackState::UpdateState(UStateMachine* StateMachine, float DeltaTime)
 {
-	StateMachine->TriggerBlueprintEvent("Defaul Attack");
+	UE_LOG(LogTemp, Warning, TEXT("Default Attacking"));
+	StateMachine->TriggerBlueprintEvent("Default Attack");
 }
 
 void UAttackState::ExitState(UStateMachine* StateMachine)
