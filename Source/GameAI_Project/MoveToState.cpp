@@ -14,11 +14,8 @@ void UMoveToState::EnterState(UStateMachine* StateMachine)
     if (MCTS == nullptr)
     {
         MCTS = NewObject<UMCTS>();
+        MCTS->InitializeMCTS();
     }
-
-    UE_LOG(LogTemp, Warning, TEXT("Entered MoveToState"));
-
-    MCTS->InitializeMCTS();
 }
 
 void UMoveToState::UpdateState(UStateMachine* StateMachine, float DeltaTime)
@@ -57,7 +54,7 @@ void UMoveToState::UpdateState(UStateMachine* StateMachine, float DeltaTime)
     {
         UE_LOG(LogTemp, Error, TEXT("BestChild is nullptr"));
         // BestChild가 nullptr인 경우 CurrentNode를 루트 노드로 재설정하여 문제 방지
-        MCTS->CurrentNode = MCTS->RootNode;
+		MCTS->CurrentNode = MCTS->RootNode;
     }
 }
 
@@ -67,6 +64,7 @@ void UMoveToState::ExitState(UStateMachine* StateMachine)
     {
         float Reward = MCTS->Simulate();
         MCTS->Backpropagate(MCTS->CurrentNode, Reward);
+        MCTS->CurrentNode = MCTS->RootNode;
     }
 }
 

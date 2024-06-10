@@ -14,12 +14,10 @@ void UAttackState::EnterState(UStateMachine* StateMachine)
 	if (MCTS == nullptr)
 	{
 		MCTS = NewObject<UMCTS>();
+		MCTS->InitializeMCTS();
 	}
 
 	UE_LOG(LogTemp, Warning, TEXT("Entered Attack State"));
-
-	MCTS->InitializeMCTS();
-	
 }
 
 void UAttackState::UpdateState(UStateMachine* StateMachine, float DeltaTime)
@@ -70,6 +68,7 @@ void UAttackState::ExitState(UStateMachine* StateMachine)
 	{
 		float Reward = MCTS->Simulate();
 		MCTS->Backpropagate(MCTS->CurrentNode, Reward);
+		MCTS->CurrentNode = MCTS->RootNode;
 	}
 }
 

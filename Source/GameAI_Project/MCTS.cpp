@@ -41,14 +41,16 @@ UMCTSNode* UMCTS::SelectChildNode()
         return nullptr;
     }
 
-    if (!CurrentNode)
+    if (CurrentNode == nullptr)
     {
         UE_LOG(LogTemp, Error, TEXT("CurrentNode is nullptr"));
 		return nullptr;
     }
 
+
     for (UMCTSNode* Child : CurrentNode->Children)
     {
+
         if (Child == nullptr)
         {
             UE_LOG(LogTemp, Error, TEXT("Child node is nullptr"));
