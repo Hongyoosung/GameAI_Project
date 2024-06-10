@@ -22,6 +22,5 @@ public:
 
 private:
 	UMCTS* MCTS;
-
 	TArray<UAction*> PossibleActions;
 };

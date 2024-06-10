@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #include "MCTS.h"
 
 UMCTS::UMCTS()
@@ -10,7 +8,7 @@ UMCTS::UMCTS()
 
 void UMCTS::InitializeMCTS()
 {
-    RootNode = NewObject<UMCTSNode>();
+    RootNode = NewObject<UMCTSNode>(this);
     CurrentNode = RootNode;
 
     if (CurrentNode != nullptr)
@@ -41,6 +39,12 @@ UMCTSNode* UMCTS::SelectChildNode()
     {
         UE_LOG(LogTemp, Warning, TEXT("CurrentNode has no children"));
         return nullptr;
+    }
+
+    if (!CurrentNode)
+    {
+        UE_LOG(LogTemp, Error, TEXT("CurrentNode is nullptr"));
+		return nullptr;
     }
 
     for (UMCTSNode* Child : CurrentNode->Children)
@@ -82,7 +86,7 @@ void UMCTS::Expand(TArray<UAction*> PossibleActions)
 
     for (UAction* PossibleAction : PossibleActions)
     {
-        UMCTSNode* NewNode = NewObject<UMCTSNode>();
+        UMCTSNode* NewNode = NewObject<UMCTSNode>(this);
         if (NewNode != nullptr)
         {
             NewNode->InitializeNode(CurrentNode, PossibleAction);

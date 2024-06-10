@@ -18,10 +18,9 @@ float UMCTSNode::UCTValue(float ExplorationParameter) const
     // print visitcount
     UE_LOG(LogTemp, Warning, TEXT("VisitCount: %d"), VisitCount);
 
-
     if (VisitCount == 0)
     {
-        return 0.0f;
+        return FLT_MAX; // 방문 횟수가 0일 경우, UCT 값을 무한대로 설정하여 탐색하도록 함
     }
 
     // Check if Parent is null
@@ -35,9 +34,8 @@ float UMCTSNode::UCTValue(float ExplorationParameter) const
     {
         UE_LOG(LogTemp, Warning, TEXT("Parent VisitCount is 0"));
 
-		return 0.0f; // 오류 시 적절한 값으로 변경
+        return 0.0f; // 오류 시 적절한 값으로 변경
     }
-
 
     float Exploitation = Reward / VisitCount;
     float Exploration = ExplorationParameter * FMath::Sqrt(FMath::Loge((double)Parent->VisitCount) / VisitCount);

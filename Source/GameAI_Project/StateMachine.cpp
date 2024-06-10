@@ -121,29 +121,3 @@ UState* UStateMachine::GetDeadState()
 }
 
 
-
-
-/*
-void UStateMachine::ExecuteMCTS()
-{
-    if (RootNode == nullptr)
-    {
-        RootNode = NewObject<UMCTSNode>();
-    }
-
-    // 현재 상태에서 가능한 행동들 얻기
-    TArray<UAction*> PossibleActions = CurrentState->GetPossibleActions();
-
-    // MCTS 트리 확장 및 시뮬레이션
-    RootNode->Expand(PossibleActions);
-
-    // 최적의 행동 선택
-    UMCTSNode* BestChild = RootNode->SelectChildNode();
-    if (BestChild && BestChild->Action)
-    {
-        BestChild->Action->ExecuteAction(this);
-    }
-}
-*/
-
-
