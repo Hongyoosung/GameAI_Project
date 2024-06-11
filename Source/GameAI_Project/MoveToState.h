@@ -27,5 +27,7 @@ public:
 
 private:
 	UMCTS* MCTS;
+	UMCTSNode* BestChild;
 	TArray<UAction*> PossibleActions;
+	int32 TreeDepth;
 };

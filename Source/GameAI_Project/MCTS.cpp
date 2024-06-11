@@ -41,7 +41,7 @@ UMCTSNode* UMCTS::SelectChildNode(float Reward)
         return nullptr;
     }
 
-    if (CurrentNode == nullptr)
+    if (CurrentNode->Children.IsEmpty())
     {
         UE_LOG(LogTemp, Error, TEXT("CurrentNode is nullptr"));
 		return nullptr;
@@ -75,6 +75,8 @@ UMCTSNode* UMCTS::SelectChildNode(float Reward)
     {
         UE_LOG(LogTemp, Warning, TEXT("No valid child found"));
     }
+
+    CurrentNode = BestChild;
 
     return BestChild;
 }

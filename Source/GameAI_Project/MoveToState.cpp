@@ -9,7 +9,7 @@
 
 void UMoveToState::EnterState(UStateMachine* StateMachine)
 {
-    
+    UE_LOG(LogTemp, Warning, TEXT("Entered MoveToState"));
 
     if (MCTS == nullptr)
     {
@@ -21,51 +21,52 @@ void UMoveToState::EnterState(UStateMachine* StateMachine)
 
 void UMoveToState::UpdateState(UStateMachine* StateMachine, float Reward, float DeltaTime)
 {
-    if (!MCTS->CurrentNode)
-    {
-        return;
-    }
 
-    if (MCTS->CurrentNode->Children.Num() == 0)
-    {
-        MCTS->Expand(PossibleActions);
-    }
+	if (!MCTS->CurrentNode)
+	{
+		return;
+	}
 
-    // 최적의 행동 선택
-    UMCTSNode* BestChild = MCTS->SelectChildNode(Reward);
+	if (MCTS->CurrentNode->Children.IsEmpty() && TreeDepth <= 10)
+	{
+		MCTS->Expand(PossibleActions);
+		TreeDepth++;
 
-    if (BestChild)
-    {
-        UE_LOG(LogTemp, Warning, TEXT("BestChild is valid"));
+	}
 
-        if (BestChild->Action)
-        {
-            UE_LOG(LogTemp, Warning, TEXT("BestChild->Action is valid"));
-            BestChild->Action->ExecuteAction(StateMachine);
+	BestChild = MCTS->SelectChildNode(Reward);
 
-            // 현재 노드를 최적의 자식 노드로 설정
-            MCTS->CurrentNode = BestChild;
-        }
-        else
-        {
-            UE_LOG(LogTemp, Error, TEXT("BestChild->Action is nullptr"));
-        }
-    }
-    else
-    {
-        UE_LOG(LogTemp, Error, TEXT("BestChild is nullptr"));
-        // BestChild가 nullptr인 경우 CurrentNode를 루트 노드로 재설정하여 문제 방지
+	if (BestChild)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("BestChild is valid"));
+
+		if (BestChild->Action)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("BestChild->Action is valid"));
+			BestChild->Action->ExecuteAction(StateMachine);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("BestChild->Action is nullptr"));
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("BestChild is nullptr"));
+		// BestChild가 nullptr인 경우 CurrentNode를 루트 노드로 재설정하여 문제 방지
 		MCTS->CurrentNode = MCTS->RootNode;
-    }
+	}
 }
 
 void UMoveToState::ExitState(UStateMachine* StateMachine)
 {
     if (MCTS)
     {
+        UE_LOG(LogTemp, Warning, TEXT("Exited MoveToState"));
         //float Reward = MCTS->Simulate();
         //MCTS->Backpropagate(MCTS->CurrentNode, Reward);
         MCTS->CurrentNode = MCTS->RootNode;
+        TreeDepth = 0;
     }
 }
 

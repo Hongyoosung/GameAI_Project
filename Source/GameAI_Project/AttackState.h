@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "State.h"
+#include "MCTS.h"
 #include "AttackState.generated.h"
 
 /**
@@ -24,5 +25,7 @@ public:
 
 private:
 	UMCTS* MCTS;
+	UMCTSNode* BestChild;
 	TArray<UAction*> PossibleActions;
+	int32 TreeDepth;
 };

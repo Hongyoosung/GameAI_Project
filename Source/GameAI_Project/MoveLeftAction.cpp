@@ -9,8 +9,10 @@
 
 void UMoveLeftAction::ExecuteAction(UStateMachine* StateMachine)
 {
-    UE_LOG(LogTemp, Warning, TEXT("MoveLeftAction"));
+    UE_LOG(LogTemp, Warning, TEXT("------------MoveLeftAction"));
 
+    //StateMachine->TriggerBlueprintEvent("MoveL");
+    
     ACharacter* OwnerCharacter = Cast<ACharacter>(StateMachine->GetOwner());
     if (OwnerCharacter)
     {

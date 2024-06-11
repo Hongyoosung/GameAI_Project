@@ -3,7 +3,6 @@
 
 #include "AttackState.h"
 #include "StateMachine.h"
-#include "MCTS.h"
 #include "SkillAttackAction.h"
 #include "DeafultAttackAction.h"
 
@@ -28,13 +27,14 @@ void UAttackState::UpdateState(UStateMachine* StateMachine, float Reward, float 
 		return;
 	}
 
-	if (MCTS->CurrentNode->Children.Num() == 0)
+	if (MCTS->CurrentNode->Children.IsEmpty() && TreeDepth <= 10)
 	{
 		MCTS->Expand(PossibleActions);
+		TreeDepth++;
+		
 	}
 
-	// 최적의 행동 선택
-	UMCTSNode* BestChild = MCTS->SelectChildNode(Reward);
+	BestChild = MCTS->SelectChildNode(Reward);
 
 	if (BestChild)
 	{
@@ -44,9 +44,6 @@ void UAttackState::UpdateState(UStateMachine* StateMachine, float Reward, float 
 		{
 			UE_LOG(LogTemp, Warning, TEXT("BestChild->Action is valid"));
 			BestChild->Action->ExecuteAction(StateMachine);
-
-			// 현재 노드를 최적의 자식 노드로 설정
-			MCTS->CurrentNode = BestChild;
 		}
 		else
 		{
@@ -60,16 +57,17 @@ void UAttackState::UpdateState(UStateMachine* StateMachine, float Reward, float 
 		MCTS->CurrentNode = MCTS->RootNode;
 	}
 	
-	
 }
 
 void UAttackState::ExitState(UStateMachine* StateMachine)
 {
 	if (MCTS)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Exited Attack State"));
 		//float Reward = MCTS->Simulate();
 		//MCTS->Backpropagate(MCTS->CurrentNode, Reward);
 		MCTS->CurrentNode = MCTS->RootNode;
+		TreeDepth = 0;
 	}
 }
 

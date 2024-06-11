@@ -9,8 +9,10 @@
 
 void UMoveRightAction::ExecuteAction(UStateMachine* StateMachine)
 {
-    UE_LOG(LogTemp, Warning, TEXT("MoveRightAction"));
+    UE_LOG(LogTemp, Warning, TEXT("------------MoveRightAction"));
 
+    //StateMachine->TriggerBlueprintEvent("MoveR");
+    
     ACharacter* OwnerCharacter = Cast<ACharacter>(StateMachine->GetOwner());
     if (OwnerCharacter)
     {
@@ -50,4 +52,5 @@ void UMoveRightAction::ExecuteAction(UStateMachine* StateMachine)
             OwnerCharacter->GetWorld()->GetTimerManager().SetTimer(MoveTimer, MoveDelegate, OwnerCharacter->GetWorld()->GetDeltaSeconds(), true);
         }
     }
+    
 }

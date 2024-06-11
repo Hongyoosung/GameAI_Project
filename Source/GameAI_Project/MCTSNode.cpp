@@ -30,7 +30,7 @@ float UMCTSNode::UCTValue(float ExplorationParameter) const
 
         return 0.0f; // 오류 시 적절한 값으로 변경
     }
-    if (Parent->VisitCount == 0)
+    if (!Parent->VisitCount || Parent->VisitCount == 0)
     {
         UE_LOG(LogTemp, Warning, TEXT("Parent VisitCount is 0"));
 
