@@ -9,7 +9,7 @@ void UFleeState::EnterState(UStateMachine* StateMachine)
 	Super::EnterState(StateMachine);
 }
 
-void UFleeState::UpdateState(UStateMachine* StateMachine, float DeltaTime)
+void UFleeState::UpdateState(UStateMachine* StateMachine, float Reward, float DeltaTime)
 {
 
 }

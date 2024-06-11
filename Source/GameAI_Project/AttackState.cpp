@@ -9,18 +9,19 @@
 
 void UAttackState::EnterState(UStateMachine* StateMachine)
 {
-	PossibleActions = GetPossibleActions();
+	
 
 	if (MCTS == nullptr)
 	{
 		MCTS = NewObject<UMCTS>();
 		MCTS->InitializeMCTS();
+		PossibleActions = GetPossibleActions();
 	}
 
 	UE_LOG(LogTemp, Warning, TEXT("Entered Attack State"));
 }
 
-void UAttackState::UpdateState(UStateMachine* StateMachine, float DeltaTime)
+void UAttackState::UpdateState(UStateMachine* StateMachine, float Reward, float DeltaTime)
 {
 	if (!MCTS->CurrentNode)
 	{
@@ -33,7 +34,7 @@ void UAttackState::UpdateState(UStateMachine* StateMachine, float DeltaTime)
 	}
 
 	// 최적의 행동 선택
-	UMCTSNode* BestChild = MCTS->SelectChildNode();
+	UMCTSNode* BestChild = MCTS->SelectChildNode(Reward);
 
 	if (BestChild)
 	{
@@ -66,8 +67,8 @@ void UAttackState::ExitState(UStateMachine* StateMachine)
 {
 	if (MCTS)
 	{
-		float Reward = MCTS->Simulate();
-		MCTS->Backpropagate(MCTS->CurrentNode, Reward);
+		//float Reward = MCTS->Simulate();
+		//MCTS->Backpropagate(MCTS->CurrentNode, Reward);
 		MCTS->CurrentNode = MCTS->RootNode;
 	}
 }
@@ -82,4 +83,9 @@ TArray<UAction*> UAttackState::GetPossibleActions()
 
 
 	return Actions;
+}
+
+void UAttackState::ResetCurrentNode()
+{
+	MCTS->CurrentNode = MCTS->RootNode;
 }

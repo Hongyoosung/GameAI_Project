@@ -16,9 +16,11 @@ class GAMEAI_PROJECT_API UAttackState : public UState
 	
 public:
 	virtual void EnterState(UStateMachine* StateMachine) override;
-	virtual void UpdateState(UStateMachine* StateMachine, float DeltaTime) override;
+	virtual void UpdateState(UStateMachine* StateMachine, float Reward, float DeltaTime) override;
 	virtual void ExitState(UStateMachine* StateMachine) override;
 	virtual TArray<UAction*> GetPossibleActions() override;
+
+	virtual void ResetCurrentNode() override;
 
 private:
 	UMCTS* MCTS;

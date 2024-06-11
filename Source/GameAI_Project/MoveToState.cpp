@@ -9,16 +9,17 @@
 
 void UMoveToState::EnterState(UStateMachine* StateMachine)
 {
-    PossibleActions = GetPossibleActions();
+    
 
     if (MCTS == nullptr)
     {
         MCTS = NewObject<UMCTS>();
         MCTS->InitializeMCTS();
+        PossibleActions = GetPossibleActions();
     }
 }
 
-void UMoveToState::UpdateState(UStateMachine* StateMachine, float DeltaTime)
+void UMoveToState::UpdateState(UStateMachine* StateMachine, float Reward, float DeltaTime)
 {
     if (!MCTS->CurrentNode)
     {
@@ -31,7 +32,7 @@ void UMoveToState::UpdateState(UStateMachine* StateMachine, float DeltaTime)
     }
 
     // 최적의 행동 선택
-    UMCTSNode* BestChild = MCTS->SelectChildNode();
+    UMCTSNode* BestChild = MCTS->SelectChildNode(Reward);
 
     if (BestChild)
     {
@@ -62,8 +63,8 @@ void UMoveToState::ExitState(UStateMachine* StateMachine)
 {
     if (MCTS)
     {
-        float Reward = MCTS->Simulate();
-        MCTS->Backpropagate(MCTS->CurrentNode, Reward);
+        //float Reward = MCTS->Simulate();
+        //MCTS->Backpropagate(MCTS->CurrentNode, Reward);
         MCTS->CurrentNode = MCTS->RootNode;
     }
 }
@@ -78,4 +79,9 @@ TArray<UAction*> UMoveToState::GetPossibleActions()
     Actions.Add(NewObject<UMoveRightAction>(this, UMoveRightAction::StaticClass()));
 
     return Actions;
+}
+
+void UMoveToState::ResetCurrentNode()
+{
+    MCTS->CurrentNode = MCTS->RootNode;
 }

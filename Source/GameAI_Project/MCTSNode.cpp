@@ -43,5 +43,7 @@ float UMCTSNode::UCTValue(float ExplorationParameter) const
     // print exploitation and exploration
     UE_LOG(LogTemp, Warning, TEXT("Exploitation: %f, Exploration: %f"), Exploitation, Exploration);
 
+    //return Exploitation + Exploration;
+
     return Exploitation + Exploration;
 }

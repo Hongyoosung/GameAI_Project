@@ -17,10 +17,10 @@ class GAMEAI_PROJECT_API UMCTS : public UObject
 public:
     UMCTS();
 
-    UMCTSNode* SelectChildNode();
+    UMCTSNode* SelectChildNode(float Reward);
     float Simulate();
     void InitializeMCTS();
-    void Backpropagate(UMCTSNode*, float);
+    float Backpropagate(UMCTSNode*, float);
     void Expand(TArray<UAction*>);
 
     UMCTSNode* RootNode;

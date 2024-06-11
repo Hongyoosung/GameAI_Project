@@ -9,7 +9,7 @@ void UDeadState::EnterState(UStateMachine* StateMachine)
     Super::EnterState(StateMachine);
 }
 
-void UDeadState::UpdateState(UStateMachine* StateMachine, float DeltaTime)
+void UDeadState::UpdateState(UStateMachine* StateMachine, float Reward, float DeltaTime)
 {
 
 }

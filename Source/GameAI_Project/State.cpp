@@ -16,11 +16,16 @@ void UState::ExitState(UStateMachine* StateMachine)
     // 상태가 종료될 때 수행할 작업
 }
 
-void UState::UpdateState(UStateMachine* StateMachine, float DeltaTime)
+void UState::UpdateState(UStateMachine* StateMachine, float Reward, float DeltaTime)
 {
 
 }
 
+
+void UState::ResetCurrentNode()
+{
+
+}
 
 TArray<UAction*> UState::GetPossibleActions()
 {

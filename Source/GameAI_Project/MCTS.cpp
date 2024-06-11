@@ -23,7 +23,7 @@ void UMCTS::InitializeMCTS()
     }
 }
 
-UMCTSNode* UMCTS::SelectChildNode()
+UMCTSNode* UMCTS::SelectChildNode(float Reward)
 {
     UMCTSNode* BestChild = nullptr;
     float BestValue = -FLT_MAX;
@@ -68,6 +68,7 @@ UMCTSNode* UMCTS::SelectChildNode()
     if (BestChild)
     {
         BestChild->VisitCount++;
+        BestChild->Reward += Reward;
         UE_LOG(LogTemp, Warning, TEXT("Selected Child with UCT Value: %f"), BestValue);
     }
     else
@@ -108,15 +109,22 @@ float UMCTS::Simulate()
     return FMath::RandRange(-100.0f, 100.0f);
 }
 
-void UMCTS::Backpropagate(UMCTSNode* Node, float InReward)
+float UMCTS::Backpropagate(UMCTSNode* Node, float InReward)
 {
+    // ÃÑÇÕ º¸»ó
+    float TotalReward = 0.0f;
+
     while (Node)
     {
         Node->VisitCount++;
         Node->Reward += InReward;
         UE_LOG(LogTemp, Warning, TEXT("VisitCount: %d, Reward: %f"), Node->VisitCount, Node->Reward);
         Node = Node->Parent;
+
+        TotalReward += InReward;
     }
 
     CurrentNode = RootNode;
+
+    return TotalReward;
 }

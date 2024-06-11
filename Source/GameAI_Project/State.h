@@ -20,6 +20,11 @@ class GAMEAI_PROJECT_API UState : public UObject
 public:
 	virtual void EnterState(UStateMachine* StateMachine);
 	virtual void ExitState(UStateMachine* StateMachine);
-	virtual void UpdateState(UStateMachine* StateMachine, float DeltaTime);
+
+	UFUNCTION(BlueprintCallable)
+	virtual void UpdateState(UStateMachine* StateMachine, float Reward, float DeltaTime);
+
+	UFUNCTION(BlueprintCallable)
+	virtual void ResetCurrentNode();
 	virtual TArray<UAction*> GetPossibleActions();
 };
