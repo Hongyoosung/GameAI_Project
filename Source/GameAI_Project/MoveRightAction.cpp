@@ -17,7 +17,7 @@ void UMoveRightAction::ExecuteAction(UStateMachine* StateMachine)
     if (OwnerCharacter)
     {
         // world x vector
-        FVector ForwardVector = FVector(0.0f, 1.0f, 0.0f);
+        FVector ForwardVector = OwnerCharacter->GetActorRightVector(); // Move right
 
         // 총 이동 거리와 이동 속도를 설정
         float TotalDistance = 100.0f; // 100cm (1m)

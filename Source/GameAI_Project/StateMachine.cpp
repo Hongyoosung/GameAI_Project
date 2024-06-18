@@ -55,6 +55,7 @@ void UStateMachine::InitStateMachine()
 void UStateMachine::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
     Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+    
     /*
     // 현재 상태 업데이트
     if (CurrentState)
@@ -69,6 +70,7 @@ void UStateMachine::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
         }
     }
     */
+    
 }
 
 void UStateMachine::ChangeState(UState* NewState)
