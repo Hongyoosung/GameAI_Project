@@ -1,54 +1,31 @@
 #include "MCTSNode.h"
 
 UMCTSNode::UMCTSNode()
-    : Parent(nullptr), Action(nullptr), Reward(0.0f), VisitCount(0)
+    : Parent(nullptr), Action(nullptr), VisitCount(0), TotalReward(0.0f)
 {
 }
 
 void UMCTSNode::InitializeNode(UMCTSNode* InParent, UAction* InAction)
 {
-    
     Parent = InParent;
     Action = InAction;
-    //Action = NewObject<UAction>(InAction);
-    Reward = 0.0f;
     VisitCount = 0;
+    TotalReward = 0.0f;
+    Children.Empty();
 }
 
-float UMCTSNode::UCTValue(float ExplorationParameter) const
+FString UMCTSNode::GetState() const
 {
-    // print visitcount
-    UE_LOG(LogTemp, Warning, TEXT("VisitCount: %d"), VisitCount);
+    // 이 함수의 실제 구현은 프로젝트의 상태 표현 방식에 따라 달라질 수 있습니다.
+    // 예를 들어, 게임 보드의 상태, 캐릭터의 위치, 리소스 상태 등을 문자열로 반환할 수 있습니다.
+    // 여기서는 간단한 예시만 제공합니다.
 
-    if (VisitCount == 0)
+    if (Action)
     {
-        return FLT_MAX; // 방문 횟수가 0일 경우, UCT 값을 무한대로 설정하여 탐색하도록 함
+        return FString::Printf(TEXT("Node with Action: %s"), *Action->GetName());
     }
-
-    // Check if Parent is null
-    if (Parent == nullptr)
+    else
     {
-        UE_LOG(LogTemp, Warning, TEXT("Parent is null"));
-
-        return 0.0f; // 오류 시 적절한 값으로 변경
+        return TEXT("Root Node");
     }
-
-    
-    if (Parent->VisitCount == 0)
-    {
-        UE_LOG(LogTemp, Warning, TEXT("Parent VisitCount is 0"));
-
-        return 0.0f; // 오류 시 적절한 값으로 변경
-    }
-    
-
-    float Exploitation = Reward / VisitCount;
-    float Exploration = ExplorationParameter * FMath::Sqrt(FMath::Loge((double)Parent->VisitCount) / VisitCount);
-
-    // print exploitation and exploration
-    UE_LOG(LogTemp, Warning, TEXT("Exploitation: %f, Exploration: %f"), Exploitation, Exploration);
-
-    //return Exploitation + Exploration;
-
-    return Exploitation + Exploration;
 }

@@ -9,8 +9,9 @@ void UMoveBackwardAction::ExecuteAction(UStateMachine* StateMachine)
 {
     UE_LOG(LogTemp, Warning, TEXT("------------MoveBackwardAction"));
 
-    //StateMachine->TriggerBlueprintEvent("MoveB");
+    StateMachine->TriggerBlueprintEvent("MoveB");
     
+    /*
     ACharacter* OwnerCharacter = Cast<ACharacter>(StateMachine->GetOwner());
     if (OwnerCharacter)
     {
@@ -50,5 +51,5 @@ void UMoveBackwardAction::ExecuteAction(UStateMachine* StateMachine)
             OwnerCharacter->GetWorld()->GetTimerManager().SetTimer(MoveTimer, MoveDelegate, OwnerCharacter->GetWorld()->GetDeltaSeconds(), true);
         }
     }
-    
+    */
 }

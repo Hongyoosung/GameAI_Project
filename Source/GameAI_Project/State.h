@@ -25,6 +25,5 @@ public:
 	virtual void UpdateState(UStateMachine* StateMachine, float Reward, float DeltaTime);
 
 	UFUNCTION(BlueprintCallable)
-	virtual void ResetCurrentNode();
 	virtual TArray<UAction*> GetPossibleActions();
 };

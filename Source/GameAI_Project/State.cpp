@@ -21,12 +21,6 @@ void UState::UpdateState(UStateMachine* StateMachine, float Reward, float DeltaT
 
 }
 
-
-void UState::ResetCurrentNode()
-{
-
-}
-
 TArray<UAction*> UState::GetPossibleActions()
 {
     return TArray<UAction*>();

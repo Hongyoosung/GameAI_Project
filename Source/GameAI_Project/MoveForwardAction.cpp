@@ -8,8 +8,9 @@ void UMoveForwardAction::ExecuteAction(UStateMachine* StateMachine)
 {
     UE_LOG(LogTemp, Warning, TEXT("------------MoveForwardAction"));
 
-    //StateMachine->TriggerBlueprintEvent("MoveF");
+    StateMachine->TriggerBlueprintEvent("MoveF");
     
+    /*
     ACharacter* OwnerCharacter = Cast<ACharacter>(StateMachine->GetOwner());
     if (OwnerCharacter)
     {
@@ -50,5 +51,5 @@ void UMoveForwardAction::ExecuteAction(UStateMachine* StateMachine)
             OwnerCharacter->GetWorld()->GetTimerManager().SetTimer(MoveTimer, MoveDelegate, OwnerCharacter->GetWorld()->GetDeltaSeconds(), true);
         }
     }
-    
+    */
 }

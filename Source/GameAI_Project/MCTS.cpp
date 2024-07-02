@@ -23,7 +23,12 @@ void UMCTS::InitializeMCTS()
     }
 }
 
-UMCTSNode* UMCTS::SelectChildNode(float Reward)
+void UMCTS::InitializeRootNode()
+{
+    CurrentNode = RootNode;
+}
+
+UMCTSNode* UMCTS::SelectChildNode()
 {
     if(ShouldTerminate())
 	{
@@ -52,7 +57,7 @@ UMCTSNode* UMCTS::SelectChildNode(float Reward)
             continue;
         }
 
-        float UCT = Child->UCTValue(ExplorationParameter);
+        float UCT = CalculateUCT(Child);
 
         if (UCT > BestValue)
         {
@@ -63,28 +68,35 @@ UMCTSNode* UMCTS::SelectChildNode(float Reward)
 
     if (BestChild)
     {
-        BestChild->VisitCount++;
-        BestChild->Reward += Reward;
         UE_LOG(LogTemp, Warning, TEXT("Selected Child with UCT Value: %f"), BestValue);
+
+        return BestChild;
     }
     else
     {
         UE_LOG(LogTemp, Warning, TEXT("No valid child found"));
+        return nullptr;
     }
+}
 
-    CurrentNode = BestChild;
+float UMCTS::CalculateUCT(UMCTSNode* Node) const
+{
+    if (Node->VisitCount == 0)
+        return FLT_MAX;  // 방문하지 않은 노드 우선 탐색
 
-    return CurrentNode;
+    float Exploitation = Node->TotalReward / Node->VisitCount;
+    float Exploration = ExplorationParameter * FMath::Sqrt(FMath::Loge((double)Node->Parent->VisitCount) / Node->VisitCount);
+
+    return Exploitation + Exploration;
 }
 
 void UMCTS::Expand(TArray<UAction*> PossibleActions)
 {
     if (ShouldTerminate())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("ShouldTerminate is true, cannot expand"));
-		return;
-	}
-
+    {
+        UE_LOG(LogTemp, Warning, TEXT("ShouldTerminate is true, cannot expand"));
+        return;
+    }
 
     for (UAction* PossibleAction : PossibleActions)
     {
@@ -93,7 +105,6 @@ void UMCTS::Expand(TArray<UAction*> PossibleActions)
         {
             NewNode->InitializeNode(CurrentNode, PossibleAction);
             CurrentNode->Children.Add(NewNode);
-
             UE_LOG(LogTemp, Warning, TEXT("Expanded Node"));
         }
         else
@@ -110,24 +121,21 @@ float UMCTS::Simulate()
     return FMath::RandRange(-100.0f, 100.0f);
 }
 
-float UMCTS::Backpropagate(UMCTSNode* Node, float InReward)
+void UMCTS::Backpropagate(UMCTSNode* Node, float InReward)
 {
-    // 총합 보상
-    float TotalReward = 0.0f;
+    float DiscountFactor = 0.95f;
 
-    while (Node)
+    while (Node != nullptr)
     {
         Node->VisitCount++;
-        Node->Reward += InReward;
-        UE_LOG(LogTemp, Warning, TEXT("VisitCount: %d, Reward: %f"), Node->VisitCount, Node->Reward);
+        Node->TotalReward += InReward;
+
+        UE_LOG(LogTemp, Warning, TEXT("Node Updated - VisitCount: %d, TotalReward: %f, AverageReward: %f"),
+            Node->VisitCount, Node->TotalReward, Node->TotalReward / Node->VisitCount);
+
+        InReward *= DiscountFactor;  // 할인된 보상
         Node = Node->Parent;
-
-        TotalReward += InReward;
     }
-
-    CurrentNode = RootNode;
-
-    return TotalReward;
 }
 
 // 조기 종료 조건 함수
@@ -149,14 +157,14 @@ bool UMCTS::ShouldTerminate() const
     }
 
     // 보상이 특정 값을 넘으면 중단
-    if (CurrentNode->Reward > 1000.0f)
+    if (CurrentNode->TotalReward > 1000.0f)
     {
         UE_LOG(LogTemp, Warning, TEXT("ShouldTerminate: CurrentNode Reward is over 1000"));
         return true;
     }
 
     // 트리 깊이가 10을 넘어가면 중단
-    if (TreeDepth > 10)
+    if (TreeDepth > 20)
 	{
         UE_LOG(LogTemp, Warning, TEXT("ShouldTerminate: TreeDepth is over 10"));
 
@@ -169,14 +177,15 @@ bool UMCTS::ShouldTerminate() const
 
 void UMCTS::RunMCTS(TArray<UAction*> PossibleActions, float Reward, UStateMachine* StateMachine)
 {
-    if (CurrentNode->Children.IsEmpty())
+    // 확장 단계
+    if (CurrentNode != nullptr && CurrentNode->Children.IsEmpty() && !ShouldTerminate())
     {
         Expand(PossibleActions);
     }
 
     FPlatformProcess::Sleep(0.2f);
 
-    UMCTSNode* BestChild = SelectChildNode(Reward);
+    UMCTSNode* BestChild = SelectChildNode();
 
     FPlatformProcess::Sleep(0.2f);
 
@@ -186,6 +195,8 @@ void UMCTS::RunMCTS(TArray<UAction*> PossibleActions, float Reward, UStateMachin
     }
     else
     {
-        CurrentNode = RootNode;
+        UE_LOG(LogTemp, Warning, TEXT("Failed to select a child node"));
+
+        return;
     }
 }

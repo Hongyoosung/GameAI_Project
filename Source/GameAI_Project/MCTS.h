@@ -17,18 +17,20 @@ class GAMEAI_PROJECT_API UMCTS : public UObject
 public:
     UMCTS();
 
-    UMCTSNode* SelectChildNode(float Reward);
-    float Simulate();
     void InitializeMCTS();
-    float Backpropagate(UMCTSNode*, float);
-    void Expand(TArray<UAction*>);
+    void InitializeRootNode(); 
     void RunMCTS(TArray<UAction*>, float, UStateMachine*);
 
+private:
     UMCTSNode* RootNode;
     UMCTSNode* CurrentNode;
-
-private:
     int32 TreeDepth;
     float ExplorationParameter;
-    bool ShouldTerminate() const; // 조기 중단 조건 함수 추가
+
+    UMCTSNode* SelectChildNode();
+    void Expand(TArray<UAction*> PossibleActions);
+    float Simulate();
+    void Backpropagate(UMCTSNode* Node, float InReward);
+    bool ShouldTerminate() const;
+    float CalculateUCT(UMCTSNode* Node) const;
 };

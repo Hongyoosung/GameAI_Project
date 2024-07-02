@@ -16,7 +16,7 @@ void UAttackState::EnterState(UStateMachine* StateMachine)
 	}
 	else
 	{
-		MCTS->CurrentNode = MCTS->RootNode;
+		MCTS->InitializeRootNode();
 	}
 
 	UE_LOG(LogTemp, Warning, TEXT("Entered Attack State"));
@@ -24,7 +24,7 @@ void UAttackState::EnterState(UStateMachine* StateMachine)
 
 void UAttackState::UpdateState(UStateMachine* StateMachine, float Reward, float DeltaTime)
 {
-	if (MCTS == nullptr || MCTS->CurrentNode == nullptr)
+	if (MCTS == nullptr)
 	{
 		UE_LOG(LogTemp, Error, TEXT("MCTS or CurrentNode is nullptr"));
 		return;
@@ -39,8 +39,7 @@ void UAttackState::ExitState(UStateMachine* StateMachine)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Exited Attack State"));
 		//float Reward = MCTS->Simulate();
-		//MCTS->Backpropagate(MCTS->CurrentNode, Reward);
-		MCTS->CurrentNode = MCTS->RootNode;
+		//MCTS->Backpropagate(MCTS->CurrentNode, Reward)
 	}
 }
 
@@ -54,9 +53,4 @@ TArray<UAction*> UAttackState::GetPossibleActions()
 
 
 	return Actions;
-}
-
-void UAttackState::ResetCurrentNode()
-{
-	MCTS->CurrentNode = MCTS->RootNode;
 }

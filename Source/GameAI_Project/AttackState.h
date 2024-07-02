@@ -21,8 +21,6 @@ public:
 	virtual void ExitState(UStateMachine* StateMachine) override;
 	virtual TArray<UAction*> GetPossibleActions() override;
 
-	virtual void ResetCurrentNode() override;
-
 private:
 	UMCTS* MCTS;
 	UMCTSNode* BestChild;

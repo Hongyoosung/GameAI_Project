@@ -19,15 +19,16 @@ void UMoveToState::EnterState(UStateMachine* StateMachine)
     }
     else
     {
-		MCTS->CurrentNode = MCTS->RootNode;
+        MCTS->InitializeRootNode();
 	}
 }
 
 void UMoveToState::UpdateState(UStateMachine* StateMachine, float Reward, float DeltaTime)
 {
 
-	if (!MCTS->CurrentNode)
+	if (!MCTS)
 	{
+        UE_LOG(LogTemp, Error, TEXT("MCTS or CurrentNode is nullptr"));
 		return;
 	}
 
@@ -42,7 +43,6 @@ void UMoveToState::ExitState(UStateMachine* StateMachine)
         UE_LOG(LogTemp, Warning, TEXT("Exited MoveToState"));
         //float Reward = MCTS->Simulate();
         //MCTS->Backpropagate(MCTS->CurrentNode, Reward);
-        MCTS->CurrentNode = MCTS->RootNode;
     }
 }
 
@@ -56,9 +56,4 @@ TArray<UAction*> UMoveToState::GetPossibleActions()
     Actions.Add(NewObject<UMoveRightAction>(this, UMoveRightAction::StaticClass()));
 
     return Actions;
-}
-
-void UMoveToState::ResetCurrentNode()
-{
-    MCTS->CurrentNode = MCTS->RootNode;
 }
