@@ -1,5 +1,6 @@
 # SDAEP(State-Based Dynamic Action Expansion Planning Model)
-
+![Unreal Engine](https://img.shields.io/badge/unrealengine-%23313131.svg?style=for-the-badge&logo=unrealengine&logoColor=white) ![C++](https://img.shields.io/badge/c++-%2300599C.svg?style=for-the-badge&logo=c%2B%2B&logoColor=white)
+![Windows](https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white)
 
 > This system, inspired by Monte Carlo Tree Search (MCTS), allows an agent to dynamically expand and plan its actions based on the current state through tree expansion and selection algorithms applied to a state-based system with a reinforcement learning model.
 
