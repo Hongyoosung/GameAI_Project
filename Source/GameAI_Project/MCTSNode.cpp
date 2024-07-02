@@ -7,8 +7,10 @@ UMCTSNode::UMCTSNode()
 
 void UMCTSNode::InitializeNode(UMCTSNode* InParent, UAction* InAction)
 {
+    
     Parent = InParent;
     Action = InAction;
+    //Action = NewObject<UAction>(InAction);
     Reward = 0.0f;
     VisitCount = 0;
 }
@@ -30,12 +32,15 @@ float UMCTSNode::UCTValue(float ExplorationParameter) const
 
         return 0.0f; // 오류 시 적절한 값으로 변경
     }
-    if (!Parent->VisitCount || Parent->VisitCount == 0)
+
+    
+    if (Parent->VisitCount == 0)
     {
         UE_LOG(LogTemp, Warning, TEXT("Parent VisitCount is 0"));
 
         return 0.0f; // 오류 시 적절한 값으로 변경
     }
+    
 
     float Exploitation = Reward / VisitCount;
     float Exploration = ExplorationParameter * FMath::Sqrt(FMath::Loge((double)Parent->VisitCount) / VisitCount);

@@ -20,24 +20,19 @@ UStateMachine::UStateMachine()
 void UStateMachine::BeginPlay()
 {
     Super::BeginPlay();
-
-    // 2초 딜레이 후에 상태 초기화
-    FTimerHandle DelayTimerHandle;
-    //GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle, this, &UStateMachine::InitStateMachine, 3.0f, false);
-
     InitStateMachine();
 }
 
 void UStateMachine::InitStateMachine()
 {
     // 상태 객체 생성
-    MoveToState = NewObject<UMoveToState>(this, UMoveToState::StaticClass());
-    AttackState = NewObject<UAttackState>(this, UAttackState::StaticClass());
-    FleeState = NewObject<UFleeState>(this, UFleeState::StaticClass());
-    DeadState = NewObject<UDeadState>(this, UDeadState::StaticClass());
+    MoveToState     =   NewObject<UMoveToState>(this, UMoveToState::StaticClass());
+    AttackState     =   NewObject<UAttackState>(this, UAttackState::StaticClass());
+    FleeState       =   NewObject<UFleeState>(this, UFleeState::StaticClass());
+    DeadState       =   NewObject<UDeadState>(this, UDeadState::StaticClass());
 
     // 초기 상태 설정
-    CurrentState = MoveToState;
+    CurrentState    =   MoveToState;
 
     OwnerPawn = Cast<APawn>(GetOwner());
     if (OwnerPawn)
@@ -46,15 +41,17 @@ void UStateMachine::InitStateMachine()
     }
 
     // 초기 상태 시작
+    /*
     if (CurrentState)
     {
         CurrentState->EnterState(this);
     }
+    */
 }
 
 void UStateMachine::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
-    Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+    //Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
     
     /*
     // 현재 상태 업데이트
@@ -63,27 +60,25 @@ void UStateMachine::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
         
         // Status updates every 2 seconds
         CurrentTime = GetWorld()->GetTimeSeconds();
-        if (CurrentTime - LastStateUpdateTime > 4.0f)
+        if (CurrentTime - LastStateUpdateTime > 2.0f)
         {
             LastStateUpdateTime = CurrentTime;
             CurrentState->UpdateState(this, DeltaTime);
         }
     }
     */
-    
 }
 
 void UStateMachine::ChangeState(UState* NewState)
 {
-    if (CurrentState != NewState && NewState)
+    if (CurrentState != NewState)
     {
         if (CurrentState)
         {
-            CurrentState->ExitState(this);
+            CurrentState->  ExitState(this);
+            CurrentState =  NewState;
+            CurrentState->  EnterState(this);
         }
-
-        CurrentState = NewState;
-        CurrentState->EnterState(this);
     }
 }
 

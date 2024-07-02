@@ -22,10 +22,13 @@ public:
     void InitializeMCTS();
     float Backpropagate(UMCTSNode*, float);
     void Expand(TArray<UAction*>);
+    void RunMCTS(TArray<UAction*>, float, UStateMachine*);
 
     UMCTSNode* RootNode;
     UMCTSNode* CurrentNode;
 
 private:
-
+    int32 TreeDepth;
+    float ExplorationParameter;
+    bool ShouldTerminate() const; // 조기 중단 조건 함수 추가
 };

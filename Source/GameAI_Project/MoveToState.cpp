@@ -17,6 +17,10 @@ void UMoveToState::EnterState(UStateMachine* StateMachine)
         MCTS->InitializeMCTS();
         PossibleActions = GetPossibleActions();
     }
+    else
+    {
+		MCTS->CurrentNode = MCTS->RootNode;
+	}
 }
 
 void UMoveToState::UpdateState(UStateMachine* StateMachine, float Reward, float DeltaTime)
@@ -27,36 +31,9 @@ void UMoveToState::UpdateState(UStateMachine* StateMachine, float Reward, float 
 		return;
 	}
 
-	if (MCTS->CurrentNode->Children.IsEmpty() && TreeDepth <= 10)
-	{
-		MCTS->Expand(PossibleActions);
-		TreeDepth++;
-
-	}
-
-	BestChild = MCTS->SelectChildNode(Reward);
-
-	if (BestChild)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("BestChild is valid"));
-
-		if (BestChild->Action)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("BestChild->Action is valid"));
-			BestChild->Action->ExecuteAction(StateMachine);
-		}
-		else
-		{
-			UE_LOG(LogTemp, Error, TEXT("BestChild->Action is nullptr"));
-		}
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("BestChild is nullptr"));
-		// BestChild가 nullptr인 경우 CurrentNode를 루트 노드로 재설정하여 문제 방지
-		MCTS->CurrentNode = MCTS->RootNode;
-	}
+    MCTS->RunMCTS(PossibleActions, Reward, StateMachine);
 }
+
 
 void UMoveToState::ExitState(UStateMachine* StateMachine)
 {
@@ -66,7 +43,6 @@ void UMoveToState::ExitState(UStateMachine* StateMachine)
         //float Reward = MCTS->Simulate();
         //MCTS->Backpropagate(MCTS->CurrentNode, Reward);
         MCTS->CurrentNode = MCTS->RootNode;
-        TreeDepth = 0;
     }
 }
 

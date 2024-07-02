@@ -8,13 +8,15 @@
 
 void UAttackState::EnterState(UStateMachine* StateMachine)
 {
-	
-
 	if (MCTS == nullptr)
 	{
 		MCTS = NewObject<UMCTS>();
 		MCTS->InitializeMCTS();
 		PossibleActions = GetPossibleActions();
+	}
+	else
+	{
+		MCTS->CurrentNode = MCTS->RootNode;
 	}
 
 	UE_LOG(LogTemp, Warning, TEXT("Entered Attack State"));
@@ -22,41 +24,13 @@ void UAttackState::EnterState(UStateMachine* StateMachine)
 
 void UAttackState::UpdateState(UStateMachine* StateMachine, float Reward, float DeltaTime)
 {
-	if (!MCTS->CurrentNode)
+	if (MCTS == nullptr || MCTS->CurrentNode == nullptr)
 	{
+		UE_LOG(LogTemp, Error, TEXT("MCTS or CurrentNode is nullptr"));
 		return;
 	}
 
-	if (MCTS->CurrentNode->Children.IsEmpty() && TreeDepth <= 10)
-	{
-		MCTS->Expand(PossibleActions);
-		TreeDepth++;
-		
-	}
-
-	BestChild = MCTS->SelectChildNode(Reward);
-
-	if (BestChild)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("BestChild is valid"));
-
-		if (BestChild->Action)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("BestChild->Action is valid"));
-			BestChild->Action->ExecuteAction(StateMachine);
-		}
-		else
-		{
-			UE_LOG(LogTemp, Error, TEXT("BestChild->Action is nullptr"));
-		}
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("BestChild is nullptr"));
-		// BestChild가 nullptr인 경우 CurrentNode를 루트 노드로 재설정하여 문제 방지
-		MCTS->CurrentNode = MCTS->RootNode;
-	}
-	
+	MCTS->RunMCTS(PossibleActions, Reward, StateMachine);
 }
 
 void UAttackState::ExitState(UStateMachine* StateMachine)
@@ -67,7 +41,6 @@ void UAttackState::ExitState(UStateMachine* StateMachine)
 		//float Reward = MCTS->Simulate();
 		//MCTS->Backpropagate(MCTS->CurrentNode, Reward);
 		MCTS->CurrentNode = MCTS->RootNode;
-		TreeDepth = 0;
 	}
 }
 
