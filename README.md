@@ -6,7 +6,7 @@
 
 + **FSM**: Each state has a set of possible actions. A tree search object exists for each state, which expands and plans actions within the state. The FSM ensures that the agent's actions are organized and executed according to the current state, maintaining a structured approach to state transitions and action selections.
 
-+ **Tree Search Algorithm**: Based on the current state, possible actions are expanded into a tree structure, selecting and executing the optimal child node. The reward values help find the optimal action plan. This algorithm evaluates different action paths and selects the most promising one, continuously refining the agent's strategy through exploration and exploitation.
++ **Tree Expansion and Search Algorithm**: Based on the current state, possible actions are expanded into a tree structure, selecting and executing the optimal child node. The reward values help find the optimal action plan. This algorithm evaluates different action paths and selects the most promising one, continuously refining the agent's strategy through exploration and exploitation.
 
 + **Reinforcement Learning Model**: Manages state transitions. It handles the game environment and observational data, updating reward values based on actions performed by the tree search algorithm. The reinforcement learning model adapts to the environment by learning from the rewards received, optimizing the agent's behavior over time.
 
@@ -20,7 +20,7 @@
 
 + **FSM (유한 상태 기계)**: 각 상태마다 가능한 행동 집합이 존재합니다. 각 상태에는 트리 탐색 객체가 있으며, 이 객체를 통해 상태 내에서 행동을 확장하고 계획합니다. FSM은 에이전트의 행동이 현재 상태에 따라 조직되고 실행되도록 보장하며, 상태 전환과 행동 선택의 구조적인 접근을 유지합니다.
 
-+ **트리 탐색 알고리즘**: 현재 상태를 기반으로 가능한 행동들을 트리 형태로 확장하고, 최적의 자식 노드를 선택하고 실행합니다. 보상 값을 통해 최적의 행동 계획을 찾을 수 있도록 합니다. 이 알고리즘은 다양한 행동 경로를 평가하고 가장 유망한 경로를 선택하여, 탐색과 활용을 통해 에이전트의 전략을 지속적으로 개선합니다.
++ **트리 확장 및 탐색 알고리즘**: 현재 상태를 기반으로 가능한 행동들을 트리 형태로 확장하고, 최적의 자식 노드를 선택하고 실행합니다. 보상 값을 통해 최적의 행동 계획을 찾을 수 있도록 합니다. 이 알고리즘은 다양한 행동 경로를 평가하고 가장 유망한 경로를 선택하여, 탐색과 활용을 통해 에이전트의 전략을 지속적으로 개선합니다.
 
 + **강화학습 모델**: 상태 전환을 담당합니다. 게임 환경과 관측 데이터를 관리하며, 트리 탐색 알고리즘으로 수행된 행동을 통해 보상 값을 업데이트합니다. 강화학습 모델은 보상을 통해 환경에 적응하며, 시간이 지남에 따라 에이전트의 행동을 최적화합니다.
 
