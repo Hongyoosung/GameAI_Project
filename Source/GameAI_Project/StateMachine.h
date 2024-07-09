@@ -8,8 +8,6 @@
 
 
 class UState;
-class UMCTSNode;
-class AAIController;
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -34,7 +32,10 @@ public:
     UFUNCTION(BlueprintCallable)
     void ChangeState(UState* NewState);
 
-	void TriggerBlueprintEvent(const FName& EventName);
+	UFUNCTION(BlueprintCallable)
+	void GetObservation(float Health, float Distance, int32 Num);
+
+	void TriggerBlueprintEvent(const FName&);
 
 	APawn* OwnerPawn;
 
@@ -53,6 +54,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	UState* GetDeadState();
 
+	float DistanceToDestination;
+	float AgentHealth;
+	int32 EnemiesNum;
 	
 private:
 	UPROPERTY()
@@ -70,7 +74,6 @@ private:
 	UPROPERTY(Transient)
 	UState* DeadState;
 
-	AAIController* AIController;
 	FTimerHandle TimerHandle;
 	AActor* Owner;
 

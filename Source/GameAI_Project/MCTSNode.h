@@ -5,14 +5,16 @@
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
 #include "Action.h"
+#include "ObservationElement.h"
 #include "MCTSNode.generated.h"
 
 class UAction;
 
+
 UCLASS()
 class GAMEAI_PROJECT_API UMCTSNode : public UObject
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 public:
     UMCTSNode();
@@ -33,6 +35,11 @@ public:
 
     UPROPERTY()
     float TotalReward;
+
+    UPROPERTY()
+    float LastVisitTime;
+
+    FObservationElement Observation;
 
     // 현재 노드의 상태를 표현하는 함수 (실제 구현은 프로젝트의 상태 표현 방식에 따라 달라질 수 있습니다)
     virtual FString GetState() const;

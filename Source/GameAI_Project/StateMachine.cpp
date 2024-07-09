@@ -34,11 +34,6 @@ void UStateMachine::InitStateMachine()
     // 초기 상태 설정
     CurrentState    =   MoveToState;
 
-    OwnerPawn = Cast<APawn>(GetOwner());
-    if (OwnerPawn)
-    {
-        AIController = Cast<AAIController>(OwnerPawn->GetController());
-    }
 
     // 초기 상태 시작
     /*
@@ -80,6 +75,13 @@ void UStateMachine::ChangeState(UState* NewState)
             CurrentState->  EnterState(this);
         }
     }
+}
+
+void UStateMachine::GetObservation(float Health, float Distance, int32 Num)
+{
+    this->AgentHealth = Health;
+	this->DistanceToDestination = Distance;
+	this->EnemiesNum = Num;
 }
 
 void UStateMachine::TriggerBlueprintEvent(const FName& EventName)

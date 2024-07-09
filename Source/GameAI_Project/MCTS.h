@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
+#include "StateMachine.h"
+#include "ObservationElement.h"
 #include "MCTSNode.h"
 #include "MCTS.generated.h"
 
@@ -24,13 +26,19 @@ public:
 private:
     UMCTSNode* RootNode;
     UMCTSNode* CurrentNode;
+    FObservationElement CurrentObservation;
     int32 TreeDepth;
     float ExplorationParameter;
 
     UMCTSNode* SelectChildNode();
     void Expand(TArray<UAction*> PossibleActions);
     float Simulate();
-    void Backpropagate(UMCTSNode* Node, float InReward);
+    void Backpropagate(UMCTSNode*, float);
     bool ShouldTerminate() const;
-    float CalculateUCT(UMCTSNode* Node) const;
+    float CalculateNodeScore(UMCTSNode* Node) const;
+    float CalculateObservationSimilarity(const FObservationElement&, const FObservationElement&) const;
+    FObservationElement GenerateObservation(UAction*);
+    FObservationElement GetCurrentObservation(UStateMachine*);
+    TArray<UMCTSNode*> HashClusterNodes(const TArray<UMCTSNode*>&, int32);
+    int32 GetObservationHash(const FObservationElement& Obs);
 };

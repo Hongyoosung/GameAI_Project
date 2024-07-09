@@ -16,9 +16,6 @@ void UMCTSNode::InitializeNode(UMCTSNode* InParent, UAction* InAction)
 
 FString UMCTSNode::GetState() const
 {
-    // 이 함수의 실제 구현은 프로젝트의 상태 표현 방식에 따라 달라질 수 있습니다.
-    // 예를 들어, 게임 보드의 상태, 캐릭터의 위치, 리소스 상태 등을 문자열로 반환할 수 있습니다.
-    // 여기서는 간단한 예시만 제공합니다.
 
     if (Action)
     {
