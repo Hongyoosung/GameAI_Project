@@ -37,8 +37,5 @@ private:
     bool ShouldTerminate() const;
     float CalculateNodeScore(UMCTSNode* Node) const;
     float CalculateObservationSimilarity(const FObservationElement&, const FObservationElement&) const;
-    FObservationElement GenerateObservation(UAction*);
     FObservationElement GetCurrentObservation(UStateMachine*);
-    TArray<UMCTSNode*> HashClusterNodes(const TArray<UMCTSNode*>&, int32);
-    int32 GetObservationHash(const FObservationElement& Obs);
 };

@@ -131,7 +131,6 @@ void UMCTS::Expand(TArray<UAction*> PossibleActions)
         return;
     }
 
-    TArray<UMCTSNode*> NewNodes;
 
     for (UAction* PossibleAction : PossibleActions)
     {
@@ -140,7 +139,7 @@ void UMCTS::Expand(TArray<UAction*> PossibleActions)
         {
             NewNode->InitializeNode(CurrentNode, PossibleAction);
             NewNode->Observation = CurrentObservation; // 액션에 따른 가상의 관측값 생성
-            NewNodes.Add(NewNode);
+            CurrentNode->Children.Add(NewNode);
             UE_LOG(LogTemp, Warning, TEXT("Create New Node"));
         }
         else
@@ -149,22 +148,8 @@ void UMCTS::Expand(TArray<UAction*> PossibleActions)
         }
     }
 
-    // 관측값 클러스터링 적용
-    TArray<UMCTSNode*> ClusteredNodes = HashClusterNodes(NewNodes, 5);  // 최대 5개의 클러스터
-
-    CurrentNode->Children = ClusteredNodes;
 
     TreeDepth++;
-}
-
-
-
-
-FObservationElement UMCTS::GenerateObservation(UAction* Action)
-{
-    // 액션에 따른 가상의 관측값 생성 로직
-    // 이 부분은 게임의 특성에 맞게 구현해야 합니다.
-    return FObservationElement();
 }
 
 
@@ -274,31 +259,4 @@ float UMCTS::Simulate()
     // 실제 게임 로직이나 환경과 연동하여 시뮬레이션을 수행하고 보상을 반환
     // 여기서는 간단한 예시로 대체합니다.
     return FMath::RandRange(-100.0f, 100.0f);
-}
-
-TArray<UMCTSNode*> UMCTS::HashClusterNodes(const TArray<UMCTSNode*>& Nodes, int32 HashBuckets)
-{
-    TMap<int32, UMCTSNode*> Clusters;
-
-    for (UMCTSNode* Node : Nodes)
-    {
-        int32 HashKey = GetObservationHash(Node->Observation) % HashBuckets;
-
-        if (!Clusters.Contains(HashKey) ||
-            Node->VisitCount > Clusters[HashKey]->VisitCount)
-        {
-            Clusters[HashKey] = Node;
-        }
-    }
-
-    // 수정된 부분: 값들의 배열을 수동으로 생성
-    TArray<UMCTSNode*> ClusteredNodes;
-    Clusters.GenerateValueArray(ClusteredNodes);
-
-    return ClusteredNodes;
-}
-
-int32 UMCTS::GetObservationHash(const FObservationElement& Obs)
-{
-    return FCrc::MemCrc32(&Obs, sizeof(FObservationElement));
 }
