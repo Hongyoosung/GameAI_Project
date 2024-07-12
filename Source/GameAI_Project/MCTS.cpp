@@ -96,11 +96,27 @@ float UMCTS::CalculateNodeScore(UMCTSNode* Node) const
     float ObservationSimilarity = CalculateObservationSimilarity(Node->Observation, CurrentObservation);
     float Recency = 1.0f / (1.0f + Node->LastVisitTime);  // 최근 방문일수록 높은 값
 
-    const float C = 1.0f;  // 탐색-활용 균형 상수
-    const float D = 0.5f;  // 관측값 유사도 가중치
-    const float E = 0.3f;  // 최근성 가중치
+    // 동적 탐색 파라미터 계산
+    float DynamicExplorationParameter = CalculateDynamicExplorationParameter();
 
-    return Exploitation + C * Exploration + D * ObservationSimilarity + E * Recency;
+
+    return Exploitation + DynamicExplorationParameter * Exploration * ObservationSimilarity ;
+}
+
+
+float UMCTS::CalculateDynamicExplorationParameter() const
+{
+    // 트리의 깊이에 따라 탐색 파라미터 조정
+    float DepthFactor = FMath::Max(0.5f, 1.0f - (TreeDepth / 20.0f));
+
+    // 현재까지의 평균 보상에 따라 조정
+    float AverageReward = (RootNode->TotalReward / RootNode->VisitCount);
+    float RewardFactor = FMath::Max(0.5f, 1.0f - (AverageReward / 100.0f));  // 100은 최대 예상 보상값
+
+    // 시간에 따른 조정 (시간이 지날수록 탐색 감소)
+    float TimeFactor = FMath::Max(0.5f, 1.0f - (GetWorld()->GetTimeSeconds() / 300.0f));  // 300초 후 최소값
+
+    return ExplorationParameter * DepthFactor * RewardFactor * TimeFactor;
 }
 
 
@@ -157,19 +173,36 @@ void UMCTS::Expand(TArray<UAction*> PossibleActions)
 void UMCTS::Backpropagate(float InReward)
 {
     float DiscountFactor = 0.95f;
+    int Depth = 0;
 
     while (CurrentNode != RootNode)
     {
         CurrentNode->VisitCount++;
-        CurrentNode->TotalReward += InReward;
 
+        // 효용수치 계산: 즉시 보상과 할인된 미래 보상의 가중 평균
+        float ImmediateReward = CalculateImmediateReward(CurrentNode);
+        float DiscountedFutureReward = InReward * FMath::Pow(DiscountFactor, Depth);
+        float WeightedReward = (ImmediateReward + DiscountedFutureReward) / 2.0f;
+
+        CurrentNode->TotalReward += WeightedReward;
 
         UE_LOG(LogTemp, Warning, TEXT("Node Updated - VisitCount: %d, TotalReward: %f"),
             CurrentNode->VisitCount, CurrentNode->TotalReward);
 
-        InReward *= DiscountFactor;  // 할인된 보상
         CurrentNode = CurrentNode->Parent;
+        Depth++;
     }
+}
+
+
+float UMCTS::CalculateImmediateReward(UMCTSNode* Node) const
+{
+    // 현재 노드의 관측값을 기반으로 즉시 보상 계산
+    float DistanceReward = 100.0f - Node->Observation.DistanceToDestination;
+    float HealthReward = Node->Observation.AgentHealth;
+    float EnemyPenalty = -10.0f * Node->Observation.EnemiesNum;
+
+    return DistanceReward + HealthReward + EnemyPenalty;
 }
 
 
@@ -183,22 +216,8 @@ bool UMCTS::ShouldTerminate() const
 		return true;
 	}
 
-    // 방문 횟수가 1000을 넘으면 중단
-    if (CurrentNode->VisitCount > 1000)
-    {
-        UE_LOG(LogTemp, Warning, TEXT("ShouldTerminate: CurrentNode VisitCount is over 1000"));
 
-        return true;
-    }
-
-    // 보상이 특정 값을 넘으면 중단
-    if (CurrentNode->TotalReward > 1000.0f)
-    {
-        UE_LOG(LogTemp, Warning, TEXT("ShouldTerminate: CurrentNode Reward is over 1000"));
-        return true;
-    }
-
-    // 트리 깊이가 10을 넘어가면 중단
+    // 트리 깊이가 20을 넘어가면 중단
     if (TreeDepth > 20)
 	{
         UE_LOG(LogTemp, Warning, TEXT("ShouldTerminate: TreeDepth is over 10"));
@@ -216,6 +235,19 @@ void UMCTS::RunMCTS(TArray<UAction*> PossibleActions, float Reward, UStateMachin
     // 현재 관측값 업데이트
     CurrentObservation = GetCurrentObservation(StateMachine);
 
+    // 트리 깊이 제한에 도달했는지 확인
+    if (ShouldTerminate())
+    {
+        // 역전파 수행
+        Backpropagate(Reward);
+
+        // 루트 노드로 돌아가기
+        CurrentNode = RootNode;
+        TreeDepth = 0;
+
+        UE_LOG(LogTemp, Warning, TEXT("Tree depth limit reached. Returning to root node."));
+    }
+
     // 확장 단계
     if (CurrentNode != nullptr && CurrentNode->Children.IsEmpty() && !ShouldTerminate())
     {
@@ -231,6 +263,8 @@ void UMCTS::RunMCTS(TArray<UAction*> PossibleActions, float Reward, UStateMachin
     if (BestChild && BestChild->Action)
     {
         BestChild->Action->ExecuteAction(StateMachine);
+        CurrentNode = BestChild;
+        TreeDepth++;
     }
     else
     {

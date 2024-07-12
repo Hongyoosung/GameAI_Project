@@ -31,9 +31,10 @@ private:
     float ExplorationParameter;
     UMCTSNode* SelectChildNode();
     void Expand(TArray<UAction*> PossibleActions);
-    
+    float CalculateImmediateReward(UMCTSNode* Node) const;
     bool ShouldTerminate() const;
     float CalculateNodeScore(UMCTSNode* Node) const;
     float CalculateObservationSimilarity(const FObservationElement&, const FObservationElement&) const;
+    float CalculateDynamicExplorationParameter() const;
     FObservationElement GetCurrentObservation(UStateMachine*);
 };
