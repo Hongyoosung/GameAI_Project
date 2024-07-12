@@ -41,8 +41,8 @@ void UMoveToState::ExitState(UStateMachine* StateMachine)
     if (MCTS)
     {
         UE_LOG(LogTemp, Warning, TEXT("Exited MoveToState"));
-        //float Reward = MCTS->Simulate();
-        //MCTS->Backpropagate(MCTS->CurrentNode, Reward);
+        float Reward = 0.0f;
+        MCTS->Backpropagate(Reward);
     }
 }
 

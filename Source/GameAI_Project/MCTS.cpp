@@ -90,6 +90,7 @@ float UMCTS::CalculateNodeScore(UMCTSNode* Node) const
     if (Node->VisitCount == 0)
         return FLT_MAX;  // 방문하지 않은 노드 우선 탐색
 
+
     float Exploitation = Node->TotalReward / Node->VisitCount;
     float Exploration = ExplorationParameter * FMath::Sqrt(FMath::Loge((double)Node->Parent->VisitCount) / Node->VisitCount);
     float ObservationSimilarity = CalculateObservationSimilarity(Node->Observation, CurrentObservation);
@@ -153,21 +154,21 @@ void UMCTS::Expand(TArray<UAction*> PossibleActions)
 }
 
 
-void UMCTS::Backpropagate(UMCTSNode* Node, float InReward)
+void UMCTS::Backpropagate(float InReward)
 {
     float DiscountFactor = 0.95f;
 
-    while (Node != nullptr)
+    while (CurrentNode != RootNode)
     {
-        Node->VisitCount++;
-        Node->TotalReward += InReward;
+        CurrentNode->VisitCount++;
+        CurrentNode->TotalReward += InReward;
 
 
         UE_LOG(LogTemp, Warning, TEXT("Node Updated - VisitCount: %d, TotalReward: %f"),
-            Node->VisitCount, Node->TotalReward);
+            CurrentNode->VisitCount, CurrentNode->TotalReward);
 
         InReward *= DiscountFactor;  // 할인된 보상
-        Node = Node->Parent;
+        CurrentNode = CurrentNode->Parent;
     }
 }
 
@@ -230,8 +231,6 @@ void UMCTS::RunMCTS(TArray<UAction*> PossibleActions, float Reward, UStateMachin
     if (BestChild && BestChild->Action)
     {
         BestChild->Action->ExecuteAction(StateMachine);
-        float SimulationReward = Simulate();
-        Backpropagate(BestChild, SimulationReward);
     }
     else
     {
@@ -251,12 +250,4 @@ FObservationElement UMCTS::GetCurrentObservation(UStateMachine* StateMachine)
     Observation.EnemiesNum = StateMachine->EnemiesNum;
 
     return Observation;
-}
-
-
-float UMCTS::Simulate()
-{
-    // 실제 게임 로직이나 환경과 연동하여 시뮬레이션을 수행하고 보상을 반환
-    // 여기서는 간단한 예시로 대체합니다.
-    return FMath::RandRange(-100.0f, 100.0f);
 }

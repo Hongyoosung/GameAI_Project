@@ -22,18 +22,16 @@ public:
     void InitializeMCTS();
     void InitializeRootNode(); 
     void RunMCTS(TArray<UAction*>, float, UStateMachine*);
-
+    void Backpropagate(float);
 private:
     UMCTSNode* RootNode;
     UMCTSNode* CurrentNode;
     FObservationElement CurrentObservation;
     int32 TreeDepth;
     float ExplorationParameter;
-
     UMCTSNode* SelectChildNode();
     void Expand(TArray<UAction*> PossibleActions);
-    float Simulate();
-    void Backpropagate(UMCTSNode*, float);
+    
     bool ShouldTerminate() const;
     float CalculateNodeScore(UMCTSNode* Node) const;
     float CalculateObservationSimilarity(const FObservationElement&, const FObservationElement&) const;
