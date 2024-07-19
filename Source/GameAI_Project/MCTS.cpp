@@ -2,7 +2,7 @@
 #include "Kismet/KismetMathLibrary.h"
 
 UMCTS::UMCTS()
-    : RootNode(nullptr), CurrentNode(nullptr), TreeDepth(0), ExplorationParameter(1.41f), World(nullptr)
+    : RootNode(nullptr), CurrentNode(nullptr), TreeDepth(0), ExplorationParameter(1.41f)
 {
 }
 
@@ -272,7 +272,7 @@ void UMCTS::RunMCTS(TArray<UAction*> PossibleActions, UStateMachine* StateMachin
 
         FPlatformProcess::Sleep(0.2f);
 
-        BestChild->Action->ExecuteAction(StateMachine);
+        CurrentNode->Action->ExecuteAction(StateMachine);
         UE_LOG(LogTemp, Warning, TEXT("After ExecuteAction - CurrentNode: %p, TreeDepth: %d"), CurrentNode, TreeDepth);
     }
     else

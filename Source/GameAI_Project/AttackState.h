@@ -22,7 +22,12 @@ public:
 	virtual TArray<UAction*> GetPossibleActions() override;
 
 private:
+	UPROPERTY(EditAnywhere, Category = "Attack State")
 	UMCTS* MCTS;
+
+	UPROPERTY(EditAnywhere, Category = "Attack State")
 	UMCTSNode* BestChild;
+
+	UPROPERTY(EditAnywhere, Category = "Attack State")
 	TArray<UAction*> PossibleActions;
 };

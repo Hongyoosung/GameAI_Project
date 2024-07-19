@@ -25,7 +25,12 @@ public:
 	virtual TArray<UAction*> GetPossibleActions() override;
 
 private:
+	UPROPERTY(EditAnywhere, Category = "MoveTo State")
 	UMCTS* MCTS;
+
+	UPROPERTY(EditAnywhere, Category = "MoveTo State")
 	UMCTSNode* BestChild;
+
+	UPROPERTY(EditAnywhere, Category = "MoveTo State")
 	TArray<UAction*> PossibleActions;
 };

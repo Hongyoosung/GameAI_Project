@@ -7,5 +7,5 @@
 void UDeafultAttackAction::ExecuteAction(UStateMachine* StateMachine)
 {
 	UE_LOG(LogTemp, Warning, TEXT("------------Default Attack"));
-	StateMachine->TriggerBlueprintEvent("Default Attack");
+	//StateMachine->TriggerBlueprintEvent("Default Attack");
 }

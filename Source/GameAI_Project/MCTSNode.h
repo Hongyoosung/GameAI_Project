@@ -8,9 +8,6 @@
 #include "ObservationElement.h"
 #include "MCTSNode.generated.h"
 
-class UAction;
-
-
 UCLASS()
 class GAMEAI_PROJECT_API UMCTSNode : public UObject
 {

@@ -25,12 +25,14 @@ public:
     void Backpropagate();
 
 private:
+    UPROPERTY()
     UMCTSNode* RootNode;
+    UPROPERTY()
     UMCTSNode* CurrentNode;
+    UPROPERTY()
     FObservationElement CurrentObservation;
     int32 TreeDepth;
     float ExplorationParameter;
-    UWorld* World;
 
 private:
     UMCTSNode* SelectChildNode();
