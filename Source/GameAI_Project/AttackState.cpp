@@ -8,18 +8,19 @@
 
 void UAttackState::EnterState(UStateMachine* StateMachine)
 {
+	UE_LOG(LogTemp, Warning, TEXT("Entered Attack State"));
+
 	if (MCTS == nullptr)
 	{
 		MCTS = NewObject<UMCTS>();
 		MCTS->InitializeMCTS();
+		MCTS->InitializeCurrentNodeLocate();
 		PossibleActions = GetPossibleActions();
 	}
 	else
 	{
-		MCTS->InitializeRootNode();
+		MCTS->InitializeCurrentNodeLocate();
 	}
-
-	UE_LOG(LogTemp, Warning, TEXT("Entered Attack State"));
 }
 
 void UAttackState::UpdateState(UStateMachine* StateMachine, float Reward, float DeltaTime)
@@ -30,16 +31,15 @@ void UAttackState::UpdateState(UStateMachine* StateMachine, float Reward, float 
 		return;
 	}
 
-	MCTS->RunMCTS(PossibleActions, Reward, StateMachine);
+	MCTS->RunMCTS(PossibleActions, StateMachine);
 }
 
 void UAttackState::ExitState(UStateMachine* StateMachine)
 {
 	if (MCTS)
 	{
+		MCTS->Backpropagate();
 		UE_LOG(LogTemp, Warning, TEXT("Exited Attack State"));
-		//float Reward = MCTS->Simulate();
-		//MCTS->Backpropagate(MCTS->CurrentNode, Reward)
 	}
 }
 

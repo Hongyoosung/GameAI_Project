@@ -2,7 +2,7 @@
 #include "Kismet/KismetMathLibrary.h"
 
 UMCTS::UMCTS()
-    : RootNode(nullptr), CurrentNode(nullptr), TreeDepth(0), ExplorationParameter(1.41f)
+    : RootNode(nullptr), CurrentNode(nullptr), TreeDepth(0), ExplorationParameter(1.41f), World(nullptr)
 {
 }
 
@@ -12,10 +12,11 @@ void UMCTS::InitializeMCTS()
     RootNode = NewObject<UMCTSNode>(this);
     RootNode->InitializeNode(nullptr, nullptr);
 
+    FPlatformProcess::Sleep(0.2f);
+
     if (RootNode != nullptr)
     {
-        CurrentNode = RootNode;
-        CurrentNode->VisitCount = 1;
+        RootNode->VisitCount = 1;
 
         UE_LOG(LogTemp, Warning, TEXT("Initialized MCTS"));
     }
@@ -26,9 +27,11 @@ void UMCTS::InitializeMCTS()
 }
 
 
-void UMCTS::InitializeRootNode()
+void UMCTS::InitializeCurrentNodeLocate()
 {
+    UE_LOG(LogTemp, Warning, TEXT("Initialize Current Node Locate"));
     CurrentNode = RootNode;
+    TreeDepth = 1;
 }
 
 
@@ -87,8 +90,21 @@ UMCTSNode* UMCTS::SelectChildNode()
 
 float UMCTS::CalculateNodeScore(UMCTSNode* Node) const
 {
+    if(Node == nullptr)
+    {
+        UE_LOG(LogTemp, Warning,
+        TEXT("Node is nullptr, cannot calculate node score"));
+        return -FLT_MAX;
+    }
+
     if (Node->VisitCount == 0)
         return FLT_MAX;  // 방문하지 않은 노드 우선 탐색
+
+    if(Node->Parent == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Parent node is nullptr, cannot calculate node score"));
+		return -FLT_MAX;
+	}
 
 
     float Exploitation = Node->TotalReward / Node->VisitCount;
@@ -114,9 +130,9 @@ float UMCTS::CalculateDynamicExplorationParameter() const
     float RewardFactor = FMath::Max(0.5f, 1.0f - (AverageReward / 100.0f));  // 100은 최대 예상 보상값
 
     // 시간에 따른 조정 (시간이 지날수록 탐색 감소)
-    float TimeFactor = FMath::Max(0.5f, 1.0f - (GetWorld()->GetTimeSeconds() / 300.0f));  // 300초 후 최소값
+    //float TimeFactor = FMath::Max(0.5f, 1.0f - (World->GetWorld()->GetTimeSeconds() / 300.0f));  // 300초 후 최소값
 
-    return ExplorationParameter * DepthFactor * RewardFactor * TimeFactor;
+    return ExplorationParameter * DepthFactor * RewardFactor;
 }
 
 
@@ -142,13 +158,6 @@ float UMCTS::CalculateObservationSimilarity(const FObservationElement& Obs1, con
 
 void UMCTS::Expand(TArray<UAction*> PossibleActions)
 {
-    if (ShouldTerminate())
-    {
-        UE_LOG(LogTemp, Warning, TEXT("ShouldTerminate is true, cannot expand"));
-        return;
-    }
-
-
     for (UAction* PossibleAction : PossibleActions)
     {
         UMCTSNode* NewNode = NewObject<UMCTSNode>(this);
@@ -157,21 +166,19 @@ void UMCTS::Expand(TArray<UAction*> PossibleActions)
             NewNode->InitializeNode(CurrentNode, PossibleAction);
             NewNode->Observation = CurrentObservation; // 액션에 따른 가상의 관측값 생성
             CurrentNode->Children.Add(NewNode);
-            UE_LOG(LogTemp, Warning, TEXT("Create New Node"));
+            UE_LOG(LogTemp, Warning, TEXT("Expand: Create New Node"));
         }
         else
         {
             UE_LOG(LogTemp, Warning, TEXT("Failed to create a new node"));
         }
     }
-
-
-    TreeDepth++;
 }
 
 
-void UMCTS::Backpropagate(float InReward)
+void UMCTS::Backpropagate()
 {
+    // 현재 관측값 업데이트
     float DiscountFactor = 0.95f;
     int Depth = 0;
 
@@ -181,17 +188,18 @@ void UMCTS::Backpropagate(float InReward)
 
         // 효용수치 계산: 즉시 보상과 할인된 미래 보상의 가중 평균
         float ImmediateReward = CalculateImmediateReward(CurrentNode);
-        float DiscountedFutureReward = InReward * FMath::Pow(DiscountFactor, Depth);
+        float DiscountedFutureReward = ImmediateReward * FMath::Pow(DiscountFactor, Depth);
         float WeightedReward = (ImmediateReward + DiscountedFutureReward) / 2.0f;
 
         CurrentNode->TotalReward += WeightedReward;
-
-        UE_LOG(LogTemp, Warning, TEXT("Node Updated - VisitCount: %d, TotalReward: %f"),
-            CurrentNode->VisitCount, CurrentNode->TotalReward);
+        UE_LOG(LogTemp, Warning, TEXT("Backpropagate: Update Node - VisitCount: %d, TotalReward: %f"),
+			CurrentNode->VisitCount, CurrentNode->TotalReward);
 
         CurrentNode = CurrentNode->Parent;
         Depth++;
     }
+
+    TreeDepth = 1;
 }
 
 
@@ -217,8 +225,8 @@ bool UMCTS::ShouldTerminate() const
 	}
 
 
-    // 트리 깊이가 20을 넘어가면 중단
-    if (TreeDepth > 20)
+    // 트리 깊이가 10을 넘어가면 중단
+    if (TreeDepth >= 10)
 	{
         UE_LOG(LogTemp, Warning, TEXT("ShouldTerminate: TreeDepth is over 10"));
 
@@ -230,20 +238,15 @@ bool UMCTS::ShouldTerminate() const
 }
 
 
-void UMCTS::RunMCTS(TArray<UAction*> PossibleActions, float Reward, UStateMachine* StateMachine)
+void UMCTS::RunMCTS(TArray<UAction*> PossibleActions, UStateMachine* StateMachine)
 {
-    // 현재 관측값 업데이트
-    CurrentObservation = GetCurrentObservation(StateMachine);
+    UE_LOG(LogTemp, Warning, TEXT("RunMCTS Start - CurrentNode: %p, TreeDepth: %d"), CurrentNode, TreeDepth);
 
     // 트리 깊이 제한에 도달했는지 확인
     if (ShouldTerminate())
     {
         // 역전파 수행
-        Backpropagate(Reward);
-
-        // 루트 노드로 돌아가기
-        CurrentNode = RootNode;
-        TreeDepth = 0;
+        Backpropagate();
 
         UE_LOG(LogTemp, Warning, TEXT("Tree depth limit reached. Returning to root node."));
     }
@@ -257,19 +260,25 @@ void UMCTS::RunMCTS(TArray<UAction*> PossibleActions, float Reward, UStateMachin
     FPlatformProcess::Sleep(0.2f);
 
     UMCTSNode* BestChild = SelectChildNode();
+    TreeDepth++;
 
     FPlatformProcess::Sleep(0.2f);
 
-    if (BestChild && BestChild->Action)
+    UE_LOG(LogTemp, Warning, TEXT("Before ExecuteAction - BestChild: %p, Action: %p"), BestChild, BestChild ? BestChild->Action : nullptr);
+
+    if (CurrentNode && BestChild && BestChild->Action)
     {
-        BestChild->Action->ExecuteAction(StateMachine);
         CurrentNode = BestChild;
-        TreeDepth++;
+
+        FPlatformProcess::Sleep(0.2f);
+
+        BestChild->Action->ExecuteAction(StateMachine);
+        UE_LOG(LogTemp, Warning, TEXT("After ExecuteAction - CurrentNode: %p, TreeDepth: %d"), CurrentNode, TreeDepth);
     }
     else
     {
-        UE_LOG(LogTemp, Warning, TEXT("Failed to select a child node"));
-        return;
+        UE_LOG(LogTemp, Error, TEXT("Failed to execute action - CurrentNode: %p, BestChild: %p, Action: %p"),
+            CurrentNode, BestChild, BestChild ? BestChild->Action : nullptr);
     }
 }
 

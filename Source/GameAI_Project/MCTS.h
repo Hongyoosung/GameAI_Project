@@ -20,15 +20,19 @@ public:
     UMCTS();
 
     void InitializeMCTS();
-    void InitializeRootNode(); 
-    void RunMCTS(TArray<UAction*>, float, UStateMachine*);
-    void Backpropagate(float);
+    void InitializeCurrentNodeLocate();
+    void RunMCTS(TArray<UAction*>, UStateMachine*);
+    void Backpropagate();
+
 private:
     UMCTSNode* RootNode;
     UMCTSNode* CurrentNode;
     FObservationElement CurrentObservation;
     int32 TreeDepth;
     float ExplorationParameter;
+    UWorld* World;
+
+private:
     UMCTSNode* SelectChildNode();
     void Expand(TArray<UAction*> PossibleActions);
     float CalculateImmediateReward(UMCTSNode* Node) const;

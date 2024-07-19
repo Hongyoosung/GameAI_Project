@@ -15,11 +15,12 @@ void UMoveToState::EnterState(UStateMachine* StateMachine)
     {
         MCTS = NewObject<UMCTS>();
         MCTS->InitializeMCTS();
+        MCTS->InitializeCurrentNodeLocate();
         PossibleActions = GetPossibleActions();
     }
     else
     {
-        MCTS->InitializeRootNode();
+        MCTS->InitializeCurrentNodeLocate();
 	}
 }
 
@@ -32,7 +33,7 @@ void UMoveToState::UpdateState(UStateMachine* StateMachine, float Reward, float 
 		return;
 	}
 
-    MCTS->RunMCTS(PossibleActions, Reward, StateMachine);
+    MCTS->RunMCTS(PossibleActions, StateMachine);
 }
 
 
@@ -40,9 +41,8 @@ void UMoveToState::ExitState(UStateMachine* StateMachine)
 {
     if (MCTS)
     {
+        MCTS->Backpropagate();
         UE_LOG(LogTemp, Warning, TEXT("Exited MoveToState"));
-        float Reward = 0.0f;
-        MCTS->Backpropagate(Reward);
     }
 }
 
